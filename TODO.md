@@ -112,6 +112,7 @@ main pages (not a separate route). Guesses still revealed only at kickoff and lo
 ## Goal — Align viewer & betting UI 🟡
 Goal: make the viewer and betting views share the same structure/navigation.
 - [x] Move the leaderboard to its own **Points** tab (`/points`); drop it from the Groups viewer
+- [x] All three pages share identical scaffolding in both modes; only the matches container swaps (`MatchCard` grid ↔ `ViewerMatch` stack). Betting view is the leading UI.
 
 ## Progress notes
 - 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.
@@ -174,3 +175,8 @@ Goal: make the viewer and betting views share the same structure/navigation.
 - 2026-06-13: Aligning viewer & betting UI (step 1) — moved the **leaderboard** out of the
   Groups viewer into its own **Points** tab (`/points`, `PointsPage`), available in both
   modes. Added a `Points` nav link. Tests: 101 unit + 27 e2e green; build + lint clean.
+- 2026-06-13: Aligned page layouts (step 2) — Groups, Schedule and Knockout now render the
+  **same scaffolding in both modes** (titles, sections, headings, group standings); only the
+  matches container differs: `MatchCard` inputs in betting vs `ViewerMatch` guesses in
+  viewer. Betting view leads; viewer mirrors it. Shared section testids. Tests: 101 unit +
+  27 e2e green; build + lint clean.

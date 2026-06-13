@@ -4,41 +4,16 @@ import { StandingsTable } from '../components/StandingsTable';
 import { ViewerMatch } from '../components/ViewerMatch';
 import { useViewerMode } from '../context/ViewerModeContext';
 
-function GroupsViewer() {
-  return (
-    <div className="page" data-testid="groups-page">
-      <h1>Viewer — Groups</h1>
-      <p className="page-intro">
-        Everyone's group-stage guesses, revealed at kickoff next to the actual result and
-        the points earned. See the <strong>Points</strong> tab for the leaderboard.
-      </p>
-
-      {groups.map((group) => (
-        <section
-          key={group.id}
-          className="viewer-group"
-          data-testid={`viewer-group-${group.id}`}
-        >
-          <h3>Group {group.id}</h3>
-          {getMatchesByGroup(group.id).map((m) => (
-            <ViewerMatch key={m.id} match={m} />
-          ))}
-        </section>
-      ))}
-    </div>
-  );
-}
-
 export function GroupsPage() {
   const { viewerMode } = useViewerMode();
-  if (viewerMode) return <GroupsViewer />;
 
   return (
     <div className="page" data-testid="groups-page">
-      <h1>Groups</h1>
+      <h1>{viewerMode ? 'Viewer — Groups' : 'Groups'}</h1>
       <p className="page-intro">
-        Place a scoreline prediction for every group-stage match. Bets lock at kickoff.
-        Standings update from synced results.
+        {viewerMode
+          ? "Everyone's group-stage guesses, revealed at kickoff next to the actual result. Standings update from synced results."
+          : 'Place a scoreline prediction for every group-stage match. Bets lock at kickoff. Standings update from synced results.'}
       </p>
 
       <div className="group-sections">
@@ -52,11 +27,19 @@ export function GroupsPage() {
             >
               <h2>Group {group.id}</h2>
               <StandingsTable groupId={group.id} teamIds={group.teamIds} />
-              <div className="match-grid">
-                {matches.map((m) => (
-                  <MatchCard key={m.id} match={m} />
-                ))}
-              </div>
+              {viewerMode ? (
+                <div className="viewer-group">
+                  {matches.map((m) => (
+                    <ViewerMatch key={m.id} match={m} />
+                  ))}
+                </div>
+              ) : (
+                <div className="match-grid">
+                  {matches.map((m) => (
+                    <MatchCard key={m.id} match={m} />
+                  ))}
+                </div>
+              )}
             </section>
           );
         })}

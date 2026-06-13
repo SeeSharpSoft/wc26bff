@@ -39,6 +39,10 @@ test.describe('Viewer mode — overlay across the three pages', () => {
     // The leaderboard now lives on the Points tab, not under Groups.
     await expect(page.getByTestId('leaderboard')).toHaveCount(0);
 
+    // Same scaffolding as the betting view: group sections + standings tables.
+    await expect(page.getByTestId('group-section-A')).toBeVisible();
+    await expect(page.getByTestId('standings-A')).toBeVisible();
+
     // m001 has started: the bet and points are revealed.
     await expect(page.getByTestId('viewer-bets-m001')).toBeVisible();
     await expect(page.getByTestId('viewer-bet-m001-u-alice')).toContainText('2–0');
@@ -68,9 +72,10 @@ test.describe('Viewer mode — overlay across the three pages', () => {
   test('Knockout page shows guesses instead of inputs', async ({ page }) => {
     await page.getByTestId('site-nav').getByRole('link', { name: 'Knockout' }).click();
     await expect(page.getByTestId('knockout-page')).toBeVisible();
-    await expect(page.getByTestId('viewer-stage-round32')).toBeVisible();
+    await expect(page.getByTestId('knockout-stage-round32')).toBeVisible();
     // Knockout matches have not kicked off yet: guesses stay hidden.
     await expect(page.getByTestId('bet-m073')).toHaveCount(0);
+    await expect(page.getByTestId('viewer-hidden-m073')).toBeVisible();
   });
 
   test('selecting a user exits viewer mode and activates them', async ({ page }) => {
