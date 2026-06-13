@@ -1,5 +1,7 @@
 # World Cup 2026 — Friends Betting
 
+**Live site: <https://seesharpsoft.github.io/wc26bff>**
+
 A browser-only web app where a group of friends predict the outcomes of the
 **FIFA World Cup 2026** matches. Pick a scoreline for every game, lock in your bets
 before kickoff, switch between users, and compare everyone's guesses against the real
@@ -66,6 +68,21 @@ npm run preview
 
 The contents of `dist/` are fully static and can be served by any static host
 (e.g. GitHub Pages, Netlify, Vercel, or any web server).
+
+> **Note:** the production build is served from the `/wc26bff/` sub-path (see
+> `base` in `vite.config.ts`) to match the GitHub Pages URL. The dev server and
+> the e2e tests still use `/`. If you deploy under a different path, adjust `base`.
+
+## Deployment (GitHub Pages)
+
+The site is deployed automatically to **<https://seesharpsoft.github.io/wc26bff>**
+by the [`Deploy to GitHub Pages`](.github/workflows/deploy.yml) workflow on every
+push to `main`: it runs `npm ci && npm run build` and publishes `dist/` via GitHub
+Pages (Pages source = *GitHub Actions*). You can also trigger it manually from the
+**Actions** tab (`workflow_dispatch`).
+
+A separate [`CI`](.github/workflows/ci.yml) workflow runs lint, unit tests, the
+production build, and the Playwright e2e tests on every push and pull request.
 
 ## Run the tests
 

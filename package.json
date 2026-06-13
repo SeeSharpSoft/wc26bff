@@ -1,8 +1,30 @@
 {
   "name": "wc26bff",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Browser-only web app where friends predict the outcomes of FIFA World Cup 2026 matches — pick scorelines, lock bets at kickoff, switch users, and compare guesses against real results.",
   "type": "module",
+  "license": "MIT",
+  "author": "SeeSharpSoft",
+  "homepage": "https://seesharpsoft.github.io/wc26bff",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeeSharpSoft/wc26bff.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SeeSharpSoft/wc26bff/issues"
+  },
+  "keywords": [
+    "world-cup",
+    "world-cup-2026",
+    "football",
+    "soccer",
+    "betting",
+    "predictions",
+    "react",
+    "typescript",
+    "vite"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

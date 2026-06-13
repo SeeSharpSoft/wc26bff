@@ -397,4 +397,12 @@ Tournament data is **generated**, not hand-written:
   results need syncing) and a link to the repository
   (`https://github.com/SeeSharpSoft/wc26bff`). Closes on the ✕ button, outside-click, or
   Escape.
+- **2026-06-13** (Deploy) Hosted on **GitHub Pages** at
+  `https://seesharpsoft.github.io/wc26bff`. The production build sets Vite `base` to
+  `/wc26bff/` (only for `command === 'build'`; dev + e2e stay on `/`). HashRouter means no
+  SPA-fallback/404 config is needed on Pages. CI (`.github/workflows/ci.yml`) runs
+  lint + unit + build + e2e; deploy (`.github/workflows/deploy.yml`) builds and publishes
+  `dist/` via the Pages "GitHub Actions" source on every push to `main`. `package.json`
+  carries the full metadata (name, version, description, license MIT, author, homepage,
+  repository, bugs, keywords); `LICENSE` added.
 
