@@ -77,3 +77,32 @@ export function IconChevron({ size = '1em' }: IconProps) {
     </svg>
   );
 }
+
+export function IconInfo({ size = '1em' }: IconProps) {
+  return (
+    <svg {...svgProps(size)}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+}
+
+export function IconExternalLink({ size = '1em' }: IconProps) {
+  return (
+    <svg {...svgProps(size)}>
+      <path d="M14 5h5v5" />
+      <path d="M19 5l-8 8" />
+      <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+    </svg>
+  );
+}
+
+export function IconClose({ size = '1em' }: IconProps) {
+  return (
+    <svg {...svgProps(size)}>
+      <path d="M6 6l12 12" />
+      <path d="M18 6L6 18" />
+    </svg>
+  );
+}

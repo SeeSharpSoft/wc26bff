@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useResults } from '../context/ResultsContext';
 import { formatDateTime } from '../utils/time';
+import { AboutDialog } from './AboutDialog';
 import {
   IconChevron,
+  IconInfo,
   IconPlus,
   IconSync,
   IconTrash,
@@ -17,6 +19,7 @@ export function UserMenu() {
   const { status, error, lastSyncedAt, sync } = useResults();
 
   const [open, setOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [name, setName] = useState('');
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +64,11 @@ export function UserMenu() {
 
   function handleSync() {
     void sync();
+    setOpen(false);
+  }
+
+  function handleAbout() {
+    setAboutOpen(true);
     setOpen(false);
   }
 
@@ -189,8 +197,24 @@ export function UserMenu() {
               )}
             </span>
           </div>
+
+          <div className="user-menu-divider" role="separator" />
+
+          <button
+            type="button"
+            className="user-menu-about"
+            data-testid="about-btn"
+            onClick={handleAbout}
+          >
+            <span className="user-menu-about-icon" aria-hidden="true">
+              <IconInfo />
+            </span>
+            About this app
+          </button>
         </div>
       )}
+
+      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }

@@ -144,3 +144,5 @@ Goal: production-ready quality.
   (or outside-click/Escape) closes it. Inline SVG icons (`components/icons.tsx`); removed
   `UserSwitcher`/`SyncButton`. Added `tests/e2e/helpers.ts` and updated specs. Tests:
   101 unit + 23 e2e green; build + lint clean.
+- 2026-06-13: Added an **About** dialog (opened from the user menu) with a concise app
+  description and a GitHub repo link. Tests: 101 unit + 25 e2e green; build + lint clean.

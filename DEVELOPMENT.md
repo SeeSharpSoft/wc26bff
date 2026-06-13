@@ -162,7 +162,7 @@ src/
   domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts, bracket.ts, stages.ts
   services/        # resultsParser.ts (pure text→scores), resultsSync.ts (fetch+map, on-demand)
   context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…, Bracket…
-  components/      # Header, UserMenu, icons, MatchCard, BetInput, StandingsTable, Leaderboard, DevClock
+  components/      # Header, UserMenu, AboutDialog, icons, MatchCard, BetInput, StandingsTable, Leaderboard, DevClock
   pages/           # GroupsPage, SchedulePage, KnockoutPage, ViewerPage
   hooks/           # useNow.ts (interval-refreshed clock for live locking; honours dev override)
   utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts, devClock.ts (dev-only now override)
@@ -244,8 +244,9 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/domain/bets.ts` | Pure immutable bet logic over `BetsByUser` (get/set/clear). |
 | `src/context/UserProvider.tsx` | User state + persistence; `useUser` in `UserContext.ts`. |
 | `src/context/BetsProvider.tsx` | Bet state scoped to active user; `useBets` in `BetsContext.ts`. |
-| `src/components/UserMenu.tsx` | Top-right user/options popup: current user, switch, delete (trash), add user, and results sync — closes on any action. |
-| `src/components/icons.tsx` | Inline SVG icon set (user, users, trash, plus, sync, chevron). |
+| `src/components/UserMenu.tsx` | Top-right user/options popup: current user, switch, delete (trash), add user, results sync, and About — closes on any action. |
+| `src/components/AboutDialog.tsx` | Modal describing the app (browser-only, sync needed) with a GitHub repo link. |
+| `src/components/icons.tsx` | Inline SVG icon set (user, users, trash, plus, sync, chevron, info, external-link, close). |
 | `src/components/MatchCard.tsx` | One fixture: teams/flags, kickoff (local tz), result/LIVE, bet, points. |
 | `src/components/BetInput.tsx` | Score-guess inputs; read-only 🔒 once locked. |
 | `src/components/StandingsTable.tsx` | Group table computed from synced results. |
@@ -391,4 +392,9 @@ Tournament data is **generated**, not hand-written:
   `components/icons.tsx` (no icon dependency). e2e helpers (`tests/e2e/helpers.ts`):
   `openUserMenu`/`addUser`/`switchUser`/`deleteUser`/`syncResults` drive it; specs reopen
   the menu when they need to read the post-sync status (since sync closes it).
+- **2026-06-13** (UX) Added an **About this app** item to the user menu that opens
+  `AboutDialog` — a modal with a concise, non-technical summary (browser-only storage,
+  results need syncing) and a link to the repository
+  (`https://github.com/SeeSharpSoft/wc26bff`). Closes on the ✕ button, outside-click, or
+  Escape.
 
