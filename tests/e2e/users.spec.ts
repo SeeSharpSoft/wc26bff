@@ -53,7 +53,9 @@ test.describe('Phase 2 — user management', () => {
 
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
     await openUserMenu(page);
-    await expect(page.getByTestId('user-menu').locator('.user-menu-item')).toHaveCount(2);
+    await expect(
+      page.getByTestId('user-menu').locator('[data-testid^="select-user-"]'),
+    ).toHaveCount(2);
   });
 
   test('removing the active user falls back to another user', async ({ page }) => {
@@ -65,6 +67,8 @@ test.describe('Phase 2 — user management', () => {
 
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
     await openUserMenu(page);
-    await expect(page.getByTestId('user-menu').locator('.user-menu-item')).toHaveCount(1);
+    await expect(
+      page.getByTestId('user-menu').locator('[data-testid^="select-user-"]'),
+    ).toHaveCount(1);
   });
 });

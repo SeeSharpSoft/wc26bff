@@ -19,7 +19,7 @@ import './UserMenu.css';
 export function UserMenu() {
   const { users, activeUserId, activeUser, addUser, removeUser, switchUser } = useUser();
   const { status, error, lastSyncedAt, sync } = useResults();
-  const { viewerMode, toggleViewerMode } = useViewerMode();
+  const { viewerMode, setViewerMode } = useViewerMode();
 
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -47,6 +47,7 @@ export function UserMenu() {
 
   function handleSwitch(id: string) {
     switchUser(id);
+    setViewerMode(false);
     setOpen(false);
   }
 
@@ -61,6 +62,7 @@ export function UserMenu() {
     if (!trimmed) return;
     const user = addUser(trimmed);
     switchUser(user.id);
+    setViewerMode(false);
     setName('');
     setOpen(false);
   }
@@ -75,8 +77,8 @@ export function UserMenu() {
     setOpen(false);
   }
 
-  function handleToggleViewer() {
-    toggleViewerMode();
+  function handleSelectViewer() {
+    setViewerMode(true);
     setOpen(false);
   }
 
@@ -115,68 +117,66 @@ export function UserMenu() {
 
       {open && (
         <div className="user-menu-popup" role="menu" data-testid="user-menu">
-          <button
-            type="button"
-            className={`user-menu-viewer${viewerMode ? ' is-active' : ''}`}
-            data-testid="viewer-toggle"
-            aria-pressed={viewerMode}
-            onClick={handleToggleViewer}
-          >
-            <span className="user-menu-viewer-icon" aria-hidden="true">
-              <IconEye />
-            </span>
-            <span className="user-menu-viewer-text">
-              {viewerMode ? 'Exit viewer mode' : 'Viewer mode'}
-            </span>
-            {viewerMode && (
-              <span className="user-menu-active-tag" aria-hidden="true">
-                on
-              </span>
-            )}
-          </button>
-
-          <div className="user-menu-divider" role="separator" />
-
           <p className="user-menu-heading">Switch user</p>
 
-          {users.length > 0 ? (
-            <ul className="user-menu-list">
-              {users.map((u) => {
-                const isActive = u.id === activeUserId;
-                return (
-                  <li key={u.id} className="user-menu-item">
-                    <button
-                      type="button"
-                      className={`user-menu-name${isActive ? ' is-active' : ''}`}
-                      data-testid={`select-user-${u.id}`}
-                      aria-current={isActive}
-                      onClick={() => handleSwitch(u.id)}
-                    >
-                      <span className="user-menu-name-icon" aria-hidden="true">
-                        <IconUser />
+          <ul className="user-menu-list">
+            <li className="user-menu-item">
+              <button
+                type="button"
+                className={`user-menu-name user-menu-viewer-name${viewerMode ? ' is-active' : ''}`}
+                data-testid="viewer-toggle"
+                aria-current={viewerMode}
+                onClick={handleSelectViewer}
+              >
+                <span className="user-menu-name-icon" aria-hidden="true">
+                  <IconEye />
+                </span>
+                <span className="user-menu-name-text">Viewer mode</span>
+                {viewerMode && (
+                  <span className="user-menu-active-tag" aria-hidden="true">
+                    active
+                  </span>
+                )}
+              </button>
+            </li>
+
+            {users.map((u) => {
+              const isActive = !viewerMode && u.id === activeUserId;
+              return (
+                <li key={u.id} className="user-menu-item">
+                  <button
+                    type="button"
+                    className={`user-menu-name${isActive ? ' is-active' : ''}`}
+                    data-testid={`select-user-${u.id}`}
+                    aria-current={isActive}
+                    onClick={() => handleSwitch(u.id)}
+                  >
+                    <span className="user-menu-name-icon" aria-hidden="true">
+                      <IconUser />
+                    </span>
+                    <span className="user-menu-name-text">{u.name}</span>
+                    {isActive && (
+                      <span className="user-menu-active-tag" aria-hidden="true">
+                        active
                       </span>
-                      <span className="user-menu-name-text">{u.name}</span>
-                      {isActive && (
-                        <span className="user-menu-active-tag" aria-hidden="true">
-                          active
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      className="user-menu-delete"
-                      data-testid={`delete-user-${u.id}`}
-                      title={`Delete ${u.name}`}
-                      aria-label={`Delete ${u.name}`}
-                      onClick={() => handleDelete(u.id)}
-                    >
-                      <IconTrash />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="user-menu-delete"
+                    data-testid={`delete-user-${u.id}`}
+                    title={`Delete ${u.name}`}
+                    aria-label={`Delete ${u.name}`}
+                    onClick={() => handleDelete(u.id)}
+                  >
+                    <IconTrash />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {users.length === 0 && (
             <p className="user-menu-empty" data-testid="user-menu-empty">
               No users yet — add one below to start betting.
             </p>

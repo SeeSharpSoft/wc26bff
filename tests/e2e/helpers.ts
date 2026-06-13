@@ -36,16 +36,12 @@ export async function syncResults(page: Page) {
   await page.getByTestId('sync-btn').click();
 }
 
-/** Enable viewer mode via the top entry in the menu (which then closes). */
+/**
+ * Enable viewer mode by selecting the "Viewer mode" entry in the user list
+ * (which then closes the menu). It deactivates any active user.
+ */
 export async function enterViewerMode(page: Page) {
   await openUserMenu(page);
   await page.getByTestId('viewer-toggle').click();
   await expect(page.getByTestId('viewer-active')).toBeVisible();
-}
-
-/** Disable viewer mode via the top entry in the menu (which then closes). */
-export async function exitViewerMode(page: Page) {
-  await openUserMenu(page);
-  await page.getByTestId('viewer-toggle').click();
-  await expect(page.getByTestId('viewer-active')).toHaveCount(0);
 }

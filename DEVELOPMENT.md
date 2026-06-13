@@ -410,13 +410,17 @@ Tournament data is **generated**, not hand-written:
   `dist/` via the Pages "GitHub Actions" source on every push to `main`. `package.json`
   carries the full metadata (name, version, description, license MIT, author, homepage,
   repository, bugs, keywords); `LICENSE` added.
-- **2026-06-13** (UX) **Viewer mode reworked into a global view toggle.** It is no longer a
-  separate `/viewer` route/nav link; instead it is the **top entry of the user menu**
-  (`viewer-toggle`) backed by `ViewerModeProvider` (in-memory, not persisted). When on, the
-  three main pages render read-only viewer variants: Groups → a viewer overview (leaderboard
-  + group guesses), Schedule → the same date-grouped layout but showing guesses, Knockout →
-  the same round sections showing guesses. All variants reuse the shared `ViewerMatch`
-  component, which keeps the privacy rule (`isMatchStarted`): guesses stay hidden and locked
-  until kickoff. The trigger and active-user bar reflect viewer mode; toggling closes the
-  menu. e2e helpers add `enterViewerMode`/`exitViewerMode`.
+- **2026-06-13** (UX) **Viewer mode reworked into a global view toggle**, presented like a
+  selectable user. It is no longer a separate `/viewer` route/nav link; instead it is a
+  **"Viewer mode" entry at the top of the user list** in the user menu, backed by
+  `ViewerModeProvider` (in-memory, not persisted). Selecting it activates viewer mode and
+  **deactivates any active user** (it carries the "active" tag, no real user does);
+  selecting a real user (or adding one) **exits viewer mode** and activates that user — so
+  viewer mode and a personal user are mutually exclusive, exactly like switching users. When
+  on, the three main pages render read-only viewer variants: Groups → a viewer overview
+  (leaderboard + group guesses), Schedule → the same date-grouped layout but showing guesses,
+  Knockout → the same round sections showing guesses. All variants reuse the shared
+  `ViewerMatch` component, which keeps the privacy rule (`isMatchStarted`): guesses stay
+  hidden and locked until kickoff. The trigger and active-user bar reflect viewer mode. e2e
+  helper `enterViewerMode` selects the entry; exiting is just `switchUser`.
 

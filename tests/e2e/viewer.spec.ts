@@ -67,10 +67,11 @@ test.describe('Viewer mode — overlay across the three pages', () => {
     await expect(page.getByTestId('bet-m073')).toHaveCount(0);
   });
 
-  test('exiting viewer mode restores the betting UI', async ({ page }) => {
+  test('selecting a user exits viewer mode and activates them', async ({ page }) => {
     await page.getByTestId('user-menu-trigger').click();
-    await page.getByTestId('viewer-toggle').click();
+    await page.getByTestId('select-user-u-alice').click();
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
+    await expect(page.getByTestId('viewer-active')).toHaveCount(0);
     await expect(page.getByTestId('active-user-banner')).toContainText('Betting as Alice');
   });
 });
