@@ -1,14 +1,7 @@
 import { groups, matches, teams, getTeam, flagUrl } from './data';
 import type { Match } from './types';
+import { formatDateTime, localTimeZoneLabel } from './utils/time';
 import './App.css';
-
-function formatKickoff(iso: string): string {
-  return new Date(iso).toLocaleString('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  });
-}
 
 function ResultBadge({ match }: { match: Match }) {
   if (!match.officialResult) return <span className="badge badge-scheduled">scheduled</span>;
@@ -76,7 +69,9 @@ function App() {
                 {' v '}
                 {m.away.kind === 'team' ? getTeam(m.away.teamId)!.name : m.away.label}
               </span>
-              <span className="match-time">{formatKickoff(m.kickoff)} UTC</span>
+              <span className="match-time">
+                {formatDateTime(m.kickoff)} {localTimeZoneLabel(m.kickoff)}
+              </span>
               <ResultBadge match={m} />
             </li>
           ))}

@@ -65,7 +65,7 @@ export interface Match {
   groupId: string | null;
   /** Human-readable round label, e.g. "Group A" / "Round of 32". */
   roundLabel: string;
-  /** Kickoff time as ISO 8601 UTC string. Drives bet locking. */
+  /** Kickoff time as ISO 8601 UTC string (stored in UTC; displayed in local time). */
   kickoff: string;
   venue: string;
   home: TeamRef;

@@ -149,7 +149,7 @@ src/
   hooks/
   components/      # (Phase 3+) GroupTable, MatchCard/BetInput, Bracket, Leaderboard, …
   pages/           # (Phase 3+) GroupsPage, SchedulePage, KnockoutPage, ViewerPage
-  utils/           # (Phase 4+) scoring.ts, locking.ts, standings.ts, time.ts
+  utils/           # time.ts (local-tz formatting); scoring/locking/standings in Phase 4+
   types.ts         # domain model (single source of truth)
   App.tsx          # Phase 1: data-overview screen (router added in Phase 2/3)
 scripts/
@@ -191,6 +191,12 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
   and must be unit-testable without React.
 - Components stay presentational; persistence goes through the storage layer / context.
 - Never write user data anywhere but localStorage (no network).
+- **Dates & times — store in UTC, display in local time.** All timestamps are persisted
+  as ISO-8601 UTC strings, but everything shown to the user MUST be rendered in the
+  **browser's local timezone**. Always format through the helpers in `src/utils/time.ts`
+  (`formatDateTime`, `formatDate`, `formatTime`, `localTimeZoneLabel`) — never hard-code
+  a `timeZone` (e.g. `'UTC'`) in display code. Locking/scoring comparisons still operate
+  on the UTC instants, which is timezone-independent.
 - Keep `DEVELOPMENT.md` and `TODO.md` updated at the end of every phase.
 
 ---
@@ -205,6 +211,7 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/data/index.ts` | Public dataset API + helpers + data-source note. |
 | `src/data/generated.ts` | Generated teams/groups/matches (do not edit). |
 | `scripts/build-data.mjs` | Generates the dataset from `src/data/source/*.txt`. |
+| `src/utils/time.ts` | Date/time formatting in the browser's local timezone. |
 | `src/utils/scoring.ts` | Points calculation. *(Phase 4)* |
 | `src/utils/locking.ts` | Bet lock / reveal rules. *(Phase 4)* |
 

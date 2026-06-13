@@ -40,7 +40,8 @@ test.describe('Phase 1 — tournament data overview', () => {
   test('lists upcoming matches with kickoff times', async ({ page }) => {
     const list = page.getByTestId('upcoming-list');
     await expect(list.locator('.match-row')).toHaveCount(6);
-    await expect(list.locator('.match-row').first()).toContainText('UTC');
+    // Times are shown in the browser's local timezone; assert a 2026 date renders.
+    await expect(list.locator('.match-row').first()).toContainText('2026');
     await expect(
       list.locator('.match-row').first().locator('.badge'),
     ).toHaveText('scheduled');
