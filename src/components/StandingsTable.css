@@ -1,0 +1,32 @@
+.standings {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 1rem;
+  font-size: 0.85rem;
+}
+
+.standings th,
+.standings td {
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border, #eee);
+}
+
+.standings th {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.standings-team {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.standings-team .flag {
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.standings-pts {
+  font-weight: 700;
+}

@@ -56,12 +56,18 @@ Goal: browse groups/schedule and place lockable bets for the active user.
 - [x] Playwright tests (`groups.spec.ts`, `betting.spec.ts`) — 7 tests
       (uses `page.clock` for deterministic kickoff locking)
 
-## Phase 4 — Results entry & scoring ⬜
-Goal: record actual results and compute points.
-- [ ] Results entry mechanism (organiser/admin screen) — confirm UX with owner
-- [ ] `scoring.ts`: exact=3, tendency=1, else=0 (pure, unit-tested)
-- [ ] `standings.ts`: compute group tables from actual results
-- [ ] Match status (scheduled/live/finished) handling
+## Phase 4 — Results sync & scoring ✅
+Goal: pull official results from a trusted source on demand, store locally, and score bets.
+- [x] `resultsParser.ts`: pure parser for openfootball `cup.txt` text → parsed scores
+- [x] `resultsSync.ts`: fetch source (raw GitHub, CORS-ok), map to `matchId`, on-demand only
+- [x] `storage/results.ts`: persist `wc26.results` + `wc26.resultsSyncedAt` timestamp
+- [x] `ResultsProvider`/`useResults`: results map + sync state (idle/loading/error), seed from bundled `officialResult`
+- [x] `SyncButton` in header: trigger sync, show spinner / last-synced / error
+- [x] `scoring.ts`: exact=3, tendency=1, else=0 (pure, unit-tested)
+- [x] `standings.ts` + `StandingsTable`: compute & show group tables from synced results
+- [x] `MatchCard`: show synced result + active user's earned points once finished
+- [x] Unit tests (scoring, standings, resultsParser, resultsSync with fake fetch) — 14 new
+- [x] Playwright test (`results.spec.ts`): mock the source request, sync, assert result + points
 
 ## Phase 5 — Viewer mode & leaderboard ⬜
 Goal: compare all users' bets vs actual results + ranking.
@@ -97,4 +103,11 @@ Goal: production-ready quality.
   scopes bets to the active user and persists `wc26.bets`; `MatchCard`/`BetInput` enter
   & lock score guesses (read-only 🔒 after kickoff); `useNow` hook keeps locking live
   without impure render reads. Tests: 64 unit + 12 e2e all green; build + lint clean.
-  Awaiting approval to start Phase 4 (results entry & scoring).
+- 2026-06-12: Phase 4 complete. On-demand results sync from openfootball (GitHub raw,
+  CORS-ok) via the header **Sync results** button → parsed (`resultsParser.ts`), mapped
+  to match ids (`resultsSync.ts`), cached in `wc26.results` (+ `wc26.resultsSyncedAt`),
+  seeded from bundled scores on first load (`ResultsProvider`/`useResults`). Pure scoring
+  (`utils/scoring.ts`) + group standings (`domain/standings.ts`, shown via
+  `StandingsTable`); `MatchCard` shows the result and the active user's points. Tests:
+  78 unit + 15 e2e all green; build + lint clean.
+  Awaiting approval to start Phase 5 (viewer mode & leaderboard).

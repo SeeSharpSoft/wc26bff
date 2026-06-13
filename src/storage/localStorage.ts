@@ -17,6 +17,7 @@ export const KEYS = {
   activeUserId: `${STORAGE_PREFIX}.activeUserId`,
   bets: `${STORAGE_PREFIX}.bets`,
   results: `${STORAGE_PREFIX}.results`,
+  resultsSyncedAt: `${STORAGE_PREFIX}.resultsSyncedAt`,
 } as const;
 
 /** Minimal in-memory Storage implementation used as a fallback. */

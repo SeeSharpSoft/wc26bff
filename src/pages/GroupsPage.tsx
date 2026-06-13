@@ -1,5 +1,6 @@
-import { groups, getMatchesByGroup, getTeam, flagUrl } from '../data';
+import { groups, getMatchesByGroup } from '../data';
 import { MatchCard } from '../components/MatchCard';
+import { StandingsTable } from '../components/StandingsTable';
 
 export function GroupsPage() {
   return (
@@ -7,6 +8,7 @@ export function GroupsPage() {
       <h1>Groups</h1>
       <p className="page-intro">
         Place a scoreline prediction for every group-stage match. Bets lock at kickoff.
+        Standings update from synced results.
       </p>
 
       <div className="group-sections">
@@ -19,23 +21,7 @@ export function GroupsPage() {
               data-testid={`group-section-${group.id}`}
             >
               <h2>Group {group.id}</h2>
-              <ul className="group-teams">
-                {group.teamIds.map((id) => {
-                  const team = getTeam(id)!;
-                  return (
-                    <li key={id}>
-                      <img
-                        className="flag"
-                        src={flagUrl(team)}
-                        alt=""
-                        width={22}
-                        height={15}
-                      />
-                      {team.name}
-                    </li>
-                  );
-                })}
-              </ul>
+              <StandingsTable groupId={group.id} teamIds={group.teamIds} />
               <div className="match-grid">
                 {matches.map((m) => (
                   <MatchCard key={m.id} match={m} />

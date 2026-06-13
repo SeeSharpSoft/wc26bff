@@ -124,3 +124,22 @@
   clip: rect(0 0 0 0);
   border: 0;
 }
+
+.bet-points {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+.bet-points-3 {
+  color: #1a7f37;
+  font-weight: 700;
+}
+
+.bet-points-1 {
+  color: #9a6700;
+}
+
+.bet-points-0 {
+  opacity: 0.6;
+}

@@ -14,7 +14,7 @@ test.describe('Phase 3 — groups & schedule navigation', () => {
       await expect(section.getByRole('heading', { level: 2 })).toContainText(
         `Group ${letter}`,
       );
-      await expect(section.locator('.group-teams li')).toHaveCount(4);
+      await expect(section.locator('.standings tbody tr')).toHaveCount(4);
     }
   });
 

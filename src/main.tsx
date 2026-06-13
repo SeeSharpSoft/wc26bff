@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.tsx'
 import { UserProvider } from './context/UserProvider'
 import { BetsProvider } from './context/BetsProvider'
+import { ResultsProvider } from './context/ResultsProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <UserProvider>
-      <BetsProvider>
-        <App />
-      </BetsProvider>
+      <ResultsProvider>
+        <BetsProvider>
+          <App />
+        </BetsProvider>
+      </ResultsProvider>
     </UserProvider>
   </StrictMode>,
 )

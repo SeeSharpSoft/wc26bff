@@ -2,7 +2,10 @@ import type { Match, TeamRef } from '../types';
 import { flagUrl, getTeam, teamRefLabel } from '../data';
 import { formatDateTime, localTimeZoneLabel } from '../utils/time';
 import { isMatchStarted } from '../utils/locking';
+import { scoreBet } from '../utils/scoring';
 import { useNow } from '../hooks/useNow';
+import { useResults } from '../context/ResultsContext';
+import { useBets } from '../context/BetsContext';
 import { BetInput } from './BetInput';
 import './MatchCard.css';
 
@@ -24,8 +27,14 @@ function Participant({ side, teamRef }: { side: 'home' | 'away'; teamRef: TeamRe
 
 export function MatchCard({ match }: { match: Match }) {
   const now = useNow();
+  const { getResult } = useResults();
+  const { getBet } = useBets();
   const started = isMatchStarted(match, now);
-  const result = match.officialResult;
+  const result = getResult(match.id);
+  const finished = result?.status === 'finished';
+
+  const bet = getBet(match.id);
+  const points = finished && bet ? scoreBet(bet, result) : null;
 
   return (
     <article className="match-card" data-testid={`match-${match.id}`}>
@@ -53,6 +62,15 @@ export function MatchCard({ match }: { match: Match }) {
       </div>
 
       <BetInput match={match} />
+
+      {points !== null && (
+        <p
+          className={`bet-points bet-points-${points}`}
+          data-testid={`points-${match.id}`}
+        >
+          You scored <strong>{points}</strong> {points === 1 ? 'point' : 'points'}
+        </p>
+      )}
     </article>
   );
 }

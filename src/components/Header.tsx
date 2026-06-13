@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { UserSwitcher } from './UserSwitcher';
+import { SyncButton } from './SyncButton';
 import './Header.css';
 
 export function Header() {
@@ -16,6 +17,7 @@ export function Header() {
           </NavLink>
           <NavLink to="/schedule">Schedule</NavLink>
         </nav>
+        <SyncButton />
         <UserSwitcher />
       </div>
     </header>

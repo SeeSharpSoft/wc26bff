@@ -8,13 +8,17 @@ results in viewer mode.
 - **No backend** — all user data is stored in the browser (`localStorage`).
 - Scoring: exact score = **3 points**, correct tendency (win/draw/loss) = **1 point**,
   otherwise **0**.
+- **Official results** are pulled on demand (the **Sync results** button) from a trusted
+  public source ([openfootball](https://github.com/openfootball/worldcup)) and cached
+  locally; this is the only feature that needs internet access.
 
 Built with **Vite + React 19 + TypeScript**. For architecture, data model, and
 conventions see [`DEVELOPMENT.md`](./DEVELOPMENT.md); for the roadmap see
 [`TODO.md`](./TODO.md).
 
-> **Status:** Phase 1 (tournament data layer) complete. The current UI is a data
-> overview; betting and user features are coming in later phases.
+> **Status:** Phases 1–4 complete — tournament data, multi-user betting with kickoff
+> locking, and on-demand results sync with scoring & group standings. Viewer
+> mode/leaderboard and the knockout bracket are coming in later phases.
 
 ---
 
