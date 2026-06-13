@@ -31,12 +31,17 @@ Goal: model the WC2026 tournament as bundled, read-only static data.
 - [x] Unit tests for data integrity (`tests/unit/data.test.ts`, 20 tests)
 - [x] Playwright frontend test (`tests/e2e/overview.spec.ts`, 4 tests)
 
-## Phase 2 — Storage & user management ⬜
+## Phase 2 — Storage & user management ✅
 Goal: localStorage persistence and multi-user switching.
-- [ ] Typed `src/storage/localStorage.ts` wrapper + key constants
-- [ ] `UserContext`: list users, create user, switch active user, delete user
-- [ ] Header with user switcher UI
-- [ ] Persist + rehydrate active user across reloads
+- [x] Typed `src/storage/localStorage.ts` wrapper + key constants (+ in-memory fallback,
+      schema-version stub, corrupt/quota-safe read/write)
+- [x] Pure user logic in `src/domain/users.ts` (add/remove/rename, active resolution)
+- [x] User persistence accessors in `src/storage/users.ts`
+- [x] `UserContext` + `UserProvider`: list users, create, switch, remove
+- [x] Header with `UserSwitcher` UI (add / select / remove + active banner)
+- [x] Persist + rehydrate users and active selection across reloads
+- [x] Unit tests (`users.test.ts`, `storage.test.ts`) — 24 new tests
+- [x] Playwright tests (`users.spec.ts`) — add/switch/persist/remove (5 tests)
 
 ## Phase 3 — Group stage UI & betting ⬜
 Goal: browse groups/schedule and place lockable bets for the active user.
@@ -78,8 +83,8 @@ Goal: production-ready quality.
 
 ## Progress notes
 - 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.
-- 2026-06-12: Phase 1 complete. Dataset generated from openfootball source (48 teams,
-  12 groups, 104 matches) with ISO-UTC kickoffs and knockout placeholders; helpers in
-  `src/data/index.ts`; data-overview UI in `App.tsx`. Testing wired up: Jest (20 unit
-  tests) + Playwright (4 e2e tests), all green; `npm run build` + `npm run lint` clean.
-  Each later phase adds its own unit + e2e tests. Awaiting approval to start Phase 2.
+- 2026-06-12: Phase 2 complete. localStorage wrapper with in-memory fallback +
+  schema-version stub; pure user domain logic; `UserProvider`/`useUser` context; Header
+  with `UserSwitcher` (add/switch/remove + active banner); users and active selection
+  persist across reloads. Tests: 44 unit + 9 e2e all green; build + lint clean.
+  Awaiting approval to start Phase 3 (group stage UI & betting).

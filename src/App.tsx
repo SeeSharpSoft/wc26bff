@@ -1,6 +1,8 @@
 import { groups, matches, teams, getTeam, flagUrl } from './data';
 import type { Match } from './types';
 import { formatDateTime, localTimeZoneLabel } from './utils/time';
+import { Header } from './components/Header';
+import { useUser } from './context/UserContext';
 import './App.css';
 
 function ResultBadge({ match }: { match: Match }) {
@@ -35,12 +37,20 @@ function GroupCard({ groupId, teamIds }: { groupId: string; teamIds: string[] })
 function App() {
   const finishedCount = matches.filter((m) => m.officialResult).length;
   const upcoming = matches.filter((m) => !m.officialResult).slice(0, 6);
+  const { activeUser } = useUser();
 
   return (
-    <main className="app">
+    <>
+      <Header />
+      <main className="app">
       <header className="app-header">
         <h1>World Cup 2026 — Friends Betting</h1>
         <p className="tagline">Predict every match. Compete with your friends.</p>
+        <p className="active-user-banner" data-testid="active-user-banner">
+          {activeUser
+            ? `Betting as ${activeUser.name}`
+            : 'No active user — add one in the header to start betting.'}
+        </p>
         <p className="stats" data-testid="stats">
           <strong>{teams.length}</strong> teams ·{' '}
           <strong>{groups.length}</strong> groups ·{' '}
@@ -79,9 +89,10 @@ function App() {
       </section>
 
       <footer className="app-footer">
-        Phase 1 — tournament data layer. Betting &amp; user features coming next.
+        Phase 2 — multi-user storage. Betting features coming next.
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
 

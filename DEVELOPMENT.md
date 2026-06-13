@@ -121,15 +121,21 @@ After kickoff the bet is read-only. Viewer mode reveals a user's bet iff
 
 ## 4. Storage layout (localStorage keys)
 
-Namespaced under a single prefix to avoid collisions. Draft:
+Namespaced under the `wc26` prefix (`STORAGE_PREFIX`) to avoid collisions. All access
+goes through `src/storage/localStorage.ts` (`KEYS`, `readJSON`, `writeJSON`, …), which
+falls back to an in-memory store if `localStorage` is unavailable (SSR, Safari private
+mode) and tolerates missing/corrupt values.
 
-| Key                     | Value |
-|-------------------------|-------|
-| `wc26.users`            | `User[]` |
-| `wc26.activeUserId`     | `string \| null` |
-| `wc26.bets`             | `Record<userId, Record<matchId, Bet>>` |
-| `wc26.results`          | `Record<matchId, Result>` |
-| `wc26.settings`         | misc (e.g. dev "now" override) |
+| Key                     | Value | Status |
+|-------------------------|-------|--------|
+| `wc26.schemaVersion`    | `number` (currently `1`) | implemented |
+| `wc26.users`            | `User[]` | implemented (Phase 2) |
+| `wc26.activeUserId`     | `string \| null` (resolved active user) | implemented (Phase 2) |
+| `wc26.bets`             | `Record<userId, Record<matchId, Bet>>` | Phase 3 |
+| `wc26.results`          | `Record<matchId, Result>` | Phase 4 |
+
+Schema versioning: `ensureSchemaVersion()` records `SCHEMA_VERSION` on first run; bump
+it and add a migration when the persisted shape changes.
 
 Static tournament data (`teams`, `groups`, `matches`) is **bundled code**, not
 localStorage, and is treated as read-only.
@@ -144,20 +150,25 @@ src/
     source/          # raw openfootball .txt sources (cup.txt, cup_finals.txt)
     generated.ts     # AUTO-GENERATED teams/groups/matches — do not edit
     index.ts         # public API + helpers (getTeam, flagUrl, resolveTeamRef, …)
-  storage/         # (Phase 2) typed localStorage wrapper + key constants
-  context/         # (Phase 2) UserContext, BetsContext
-  hooks/
-  components/      # (Phase 3+) GroupTable, MatchCard/BetInput, Bracket, Leaderboard, …
+  storage/         # localStorage.ts (typed wrapper + keys + fallback); users.ts accessors
+  domain/          # pure logic: users.ts (add/remove/rename/active resolution)
+  context/         # UserContext.ts (context+useUser hook), UserProvider.tsx; BetsContext later
+  components/      # Header, UserSwitcher; GroupTable/MatchCard/Bracket/Leaderboard (Phase 3+)
   pages/           # (Phase 3+) GroupsPage, SchedulePage, KnockoutPage, ViewerPage
   utils/           # time.ts (local-tz formatting); scoring/locking/standings in Phase 4+
   types.ts         # domain model (single source of truth)
-  App.tsx          # Phase 1: data-overview screen (router added in Phase 2/3)
+  App.tsx          # current screen: Header + data overview (router added in Phase 3)
+  main.tsx         # mounts <UserProvider><App/></UserProvider>
 scripts/
   build-data.mjs   # source .txt -> src/data/generated.ts generator
 tests/
-  unit/            # Jest unit tests (data integrity; later scoring/locking)
-  e2e/             # Playwright browser tests
+  unit/            # Jest unit tests (data, users, storage; later scoring/locking)
+  e2e/             # Playwright browser tests (overview, users)
 ```
+
+Context split note: `UserContext.ts` (context object + `useUser` hook) is intentionally
+separate from `UserProvider.tsx` (component) so React Fast Refresh / the
+`react-refresh/only-export-components` lint rule stays happy.
 
 ---
 
@@ -211,6 +222,10 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/data/index.ts` | Public dataset API + helpers + data-source note. |
 | `src/data/generated.ts` | Generated teams/groups/matches (do not edit). |
 | `scripts/build-data.mjs` | Generates the dataset from `src/data/source/*.txt`. |
+| `src/storage/localStorage.ts` | Typed localStorage wrapper, keys, fallback, schema version. |
+| `src/domain/users.ts` | Pure user logic (add/remove/rename, active resolution). |
+| `src/context/UserProvider.tsx` | User state + persistence; `useUser` in `UserContext.ts`. |
+| `src/components/UserSwitcher.tsx` | Add / switch / remove users UI. |
 | `src/utils/time.ts` | Date/time formatting in the browser's local timezone. |
 | `src/utils/scoring.ts` | Points calculation. *(Phase 4)* |
 | `src/utils/locking.ts` | Bet lock / reveal rules. *(Phase 4)* |
@@ -269,6 +284,13 @@ Tournament data is **generated**, not hand-written:
   (Phase 4).
 - **2026-06-12** (Phase 1) Testing: Jest (unit) + Playwright (e2e). ts-jest compiles to
   CJS via `tsconfig.jest.json`.
+- **2026-06-12** Dates/times stored in UTC, displayed in the browser's local timezone
+  via `src/utils/time.ts` (see §7).
+- **2026-06-12** (Phase 2) Storage wrapper falls back to in-memory when `localStorage`
+  is unavailable, making it robust (Safari private mode) and unit-testable under Node.
+- **2026-06-12** (Phase 2) Active user is **derived** (`resolveActiveUserId`) from the
+  user list + an explicit selection, rather than corrected via a state-setting effect
+  (avoids `react-hooks/set-state-in-effect`).
 - **Open:** how organisers enter actual results (dedicated results/admin screen) —
   decide in Phase 4.
 - **Open:** dev-time "now" override to test locking before/around real kickoff times.

@@ -23,6 +23,15 @@
   color: var(--accent, #aa3bff);
 }
 
+.active-user-banner {
+  display: inline-block;
+  margin: 0 0 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--accent-bg, #eee);
+  font-size: 0.9rem;
+}
+
 h2 {
   border-bottom: 1px solid var(--border, #ddd);
   padding-bottom: 0.3rem;
