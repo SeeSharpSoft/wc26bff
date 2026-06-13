@@ -1,73 +1,101 @@
-# React + TypeScript + Vite
+# World Cup 2026 — Friends Betting
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-only web app where a group of friends predict the outcomes of the
+**FIFA World Cup 2026** matches. Pick a scoreline for every game, lock in your bets
+before kickoff, switch between users, and compare everyone's guesses against the real
+results in viewer mode.
 
-Currently, two official plugins are available:
+- **No backend** — all user data is stored in the browser (`localStorage`).
+- Scoring: exact score = **3 points**, correct tendency (win/draw/loss) = **1 point**,
+  otherwise **0**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Built with **Vite + React 19 + TypeScript**. For architecture, data model, and
+conventions see [`DEVELOPMENT.md`](./DEVELOPMENT.md); for the roadmap see
+[`TODO.md`](./TODO.md).
 
-## React Compiler
+> **Status:** Phase 1 (tournament data layer) complete. The current UI is a data
+> overview; betting and user features are coming in later phases.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Node.js ≥ 20** (developed on Node 24) and **npm ≥ 10**.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+To run the end-to-end tests you also need the Playwright browser (one-time):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npx playwright install chromium
 ```
+
+## Run in development mode
+
+Starts the Vite dev server with hot-module reloading:
+
+```bash
+npm run dev
+```
+
+Then open the printed URL (default <http://localhost:5173>).
+
+## Build for deployment
+
+Type-checks the project and produces an optimized static bundle in `dist/`:
+
+```bash
+npm run build
+```
+
+Preview the production build locally before deploying:
+
+```bash
+npm run preview
+```
+
+The contents of `dist/` are fully static and can be served by any static host
+(e.g. GitHub Pages, Netlify, Vercel, or any web server).
+
+## Run the tests
+
+| Command | What it runs |
+|---------|--------------|
+| `npm test` | **Unit tests** (Jest + ts-jest) in `tests/unit/` |
+| `npm run test:e2e` | **End-to-end / frontend tests** (Playwright, Chromium) in `tests/e2e/` |
+| `npm run lint` | ESLint over the codebase |
+
+Notes:
+- `npm run test:e2e` automatically starts the dev server (via the Playwright config),
+  so you don't need to run `npm run dev` separately. Make sure the Chromium browser is
+  installed first (see [Install](#install)).
+- Run a single Playwright test in headed/debug mode with
+  `npx playwright test --headed` or `npx playwright test --ui`.
+
+## Regenerate tournament data
+
+The teams, groups, and schedule are generated from the raw source files in
+`src/data/source/` into `src/data/generated.ts`:
+
+```bash
+npm run data:build
+```
+
+Edit the source `.txt` files (or `TEAM_META` in `scripts/build-data.mjs`) and re-run
+this command to refresh the dataset — never edit `src/data/generated.ts` by hand.
+
+## Project scripts (summary)
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start the Vite dev server (HMR). |
+| `npm run build` | Type-check (`tsc -b`) and build to `dist/`. |
+| `npm run preview` | Serve the production build locally. |
+| `npm run lint` | Run ESLint. |
+| `npm test` | Run Jest unit tests. |
+| `npm run test:e2e` | Run Playwright browser tests. |
+| `npm run data:build` | Regenerate the static tournament dataset. |
