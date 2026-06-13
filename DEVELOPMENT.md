@@ -162,7 +162,7 @@ src/
   domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts, bracket.ts, stages.ts
   services/        # resultsParser.ts (pure text→scores), resultsSync.ts (fetch+map, on-demand)
   context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…, Bracket…
-  components/      # Header, UserSwitcher, SyncButton, MatchCard, BetInput, StandingsTable, Leaderboard, DevClock
+  components/      # Header, UserMenu, icons, MatchCard, BetInput, StandingsTable, Leaderboard, DevClock
   pages/           # GroupsPage, SchedulePage, KnockoutPage, ViewerPage
   hooks/           # useNow.ts (interval-refreshed clock for live locking; honours dev override)
   utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts, devClock.ts (dev-only now override)
@@ -244,12 +244,12 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/domain/bets.ts` | Pure immutable bet logic over `BetsByUser` (get/set/clear). |
 | `src/context/UserProvider.tsx` | User state + persistence; `useUser` in `UserContext.ts`. |
 | `src/context/BetsProvider.tsx` | Bet state scoped to active user; `useBets` in `BetsContext.ts`. |
-| `src/components/UserSwitcher.tsx` | Add / switch / remove users UI. |
+| `src/components/UserMenu.tsx` | Top-right user/options popup: current user, switch, delete (trash), add user, and results sync — closes on any action. |
+| `src/components/icons.tsx` | Inline SVG icon set (user, users, trash, plus, sync, chevron). |
 | `src/components/MatchCard.tsx` | One fixture: teams/flags, kickoff (local tz), result/LIVE, bet, points. |
 | `src/components/BetInput.tsx` | Score-guess inputs; read-only 🔒 once locked. |
 | `src/components/StandingsTable.tsx` | Group table computed from synced results. |
 | `src/components/Leaderboard.tsx` | Ranked total points per user. |
-| `src/components/SyncButton.tsx` | On-demand results sync trigger + status. |
 | `src/services/resultsParser.ts` | Pure parser: openfootball `cup.txt` text → scorelines. |
 | `src/services/resultsSync.ts` | Fetch trusted source + map scorelines to match ids. |
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
@@ -382,4 +382,13 @@ Tournament data is **generated**, not hand-written:
   are dropped instead of crashing the app; `localStorage` being user-writable and
   version-spanning makes this the trust boundary. Schema migrations still hang off
   `ensureSchemaVersion()`.
+- **2026-06-13** (UX) Consolidated user management + the results-sync action into a single
+  top-right **`UserMenu`** popup (replacing the separate `UserSwitcher` and `SyncButton`).
+  The trigger shows the active user's name (or "No users yet"); the popup lists every user
+  (click a name to activate, trash icon to delete), an add-user input (Enter or the ＋
+  button), and the sync action. **Any action closes the popup** (switch/add/delete/sync),
+  and it also closes on outside-click or Escape. Icons are inline SVGs in
+  `components/icons.tsx` (no icon dependency). e2e helpers (`tests/e2e/helpers.ts`):
+  `openUserMenu`/`addUser`/`switchUser`/`deleteUser`/`syncResults` drive it; specs reopen
+  the menu when they need to read the post-sync status (since sync closes it).
 

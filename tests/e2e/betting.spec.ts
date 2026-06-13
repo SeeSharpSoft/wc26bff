@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { addUser, switchUser } from './helpers';
 
 // A fixed clock so locking is deterministic: 2026-06-15 sits after the opener
 // (m001, Jun 11 = locked) but before the late group matches (m072, Jun 28 =
@@ -13,12 +14,6 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
   await page.getByTestId('site-nav').waitFor();
 });
-
-async function addUser(page: import('@playwright/test').Page, name: string) {
-  await page.getByTestId('new-user-input').fill(name);
-  await page.getByTestId('add-user-btn').click();
-  await expect(page.getByTestId('active-user')).toHaveText(name);
-}
 
 test.describe('Phase 3 — betting & locking', () => {
   test('an open match prompts to add a user before betting', async ({ page }) => {
@@ -58,7 +53,7 @@ test.describe('Phase 3 — betting & locking', () => {
     await expect(page.getByTestId('bet-away-m072')).toHaveValue('');
 
     // Switching back to Alice restores her bet.
-    await page.getByTestId('user-select').selectOption({ label: 'Alice' });
+    await switchUser(page, 'Alice');
     await expect(page.getByTestId('bet-home-m072')).toHaveValue('3');
     await expect(page.getByTestId('bet-away-m072')).toHaveValue('0');
   });

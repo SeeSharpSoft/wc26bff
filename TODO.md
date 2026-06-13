@@ -138,3 +138,9 @@ Goal: production-ready quality.
   drops malformed users/bets/results instead of trusting raw JSON). Responsive header
   (nav wraps/scrolls, brand label hides on small screens). Tests: 101 unit + 22 e2e all
   green; build + lint clean. **Project feature-complete across Phases 1–7.**
+- 2026-06-13: UX rework — unified user management + sync into one top-right `UserMenu`
+  popup. Trigger shows the active user (or "No users yet"); popup lists users (click to
+  switch, trash to delete), an add-user input (Enter/＋), and the sync action; any action
+  (or outside-click/Escape) closes it. Inline SVG icons (`components/icons.tsx`); removed
+  `UserSwitcher`/`SyncButton`. Added `tests/e2e/helpers.ts` and updated specs. Tests:
+  101 unit + 23 e2e green; build + lint clean.

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { addUser } from './helpers';
 
 // FIXED sits before m072 (Jun 28) so it is open for betting; the dev clock
 // override is used to jump past kickoff and prove locking follows the override.
@@ -11,9 +12,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByTestId('site-nav').waitFor();
-  await page.getByTestId('new-user-input').fill('Alice');
-  await page.getByTestId('add-user-btn').click();
-  await expect(page.getByTestId('active-user')).toHaveText('Alice');
+  await addUser(page, 'Alice');
 });
 
 test.describe('Phase 7 — dev clock override', () => {

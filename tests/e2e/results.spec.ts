@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { addUser, openUserMenu, syncResults } from './helpers';
 
 const FIXED = new Date('2026-06-15T12:00:00Z');
 
@@ -25,31 +26,33 @@ test.describe('Phase 4 — results sync & scoring', () => {
   test('shows seeded results before any sync', async ({ page }) => {
     // The opener (m001) ships as a finished result in the bundled dataset.
     await expect(page.getByTestId('result-m001')).toContainText('2');
+    await openUserMenu(page);
     await expect(page.getByTestId('sync-status')).toContainText('Not synced yet');
   });
 
   test('syncing pulls a result and scores the active user’s bet', async ({ page }) => {
     // Bet exactly the mocked outcome on m072 while it is still open.
-    await page.getByTestId('new-user-input').fill('Alice');
-    await page.getByTestId('add-user-btn').click();
+    await addUser(page, 'Alice');
     await page.getByTestId('bet-home-m072').fill('2');
     await page.getByTestId('bet-away-m072').fill('1');
 
-    await page.getByTestId('sync-btn').click();
+    await syncResults(page);
 
+    // The menu closes on sync; re-open it to read the updated status.
+    await openUserMenu(page);
     await expect(page.getByTestId('sync-status')).toContainText('Synced');
+    await page.keyboard.press('Escape'); // close so it doesn't overlay the grid
     await expect(page.getByTestId('result-m072')).toContainText('2');
     await expect(page.getByTestId('points-m072')).toContainText('3');
   });
 
   test('a wrong-tendency bet scores zero points after sync', async ({ page }) => {
-    await page.getByTestId('new-user-input').fill('Bob');
-    await page.getByTestId('add-user-btn').click();
+    await addUser(page, 'Bob');
     // Bob predicts an Argentina win; actual is a Jordan win -> 0 points.
     await page.getByTestId('bet-home-m072').fill('0');
     await page.getByTestId('bet-away-m072').fill('2');
 
-    await page.getByTestId('sync-btn').click();
+    await syncResults(page);
 
     await expect(page.getByTestId('points-m072')).toContainText('0');
   });

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { addUser, deleteUser, openUserMenu, switchUser } from './helpers';
 
 // Each test starts from a clean localStorage so users don't leak between cases.
 test.beforeEach(async ({ page }) => {
@@ -9,56 +10,61 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Phase 2 — user management', () => {
   test('starts with no users', async ({ page }) => {
+    // The trigger shows the empty state directly, without opening the menu.
     await expect(page.getByTestId('no-users')).toBeVisible();
     await expect(page.getByTestId('active-user-banner')).toContainText('No active user');
   });
 
   test('adding a user makes them active', async ({ page }) => {
-    await page.getByTestId('new-user-input').fill('Alice');
-    await page.getByTestId('add-user-btn').click();
+    await addUser(page, 'Alice');
 
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
     await expect(page.getByTestId('active-user-banner')).toContainText('Betting as Alice');
+
+    // The add input is reset (re-open the menu to inspect it).
+    await openUserMenu(page);
     await expect(page.getByTestId('new-user-input')).toHaveValue('');
   });
 
+  test('the menu closes after adding a user', async ({ page }) => {
+    await addUser(page, 'Alice');
+    await expect(page.getByTestId('user-menu')).toBeHidden();
+  });
+
   test('can switch between multiple users', async ({ page }) => {
-    for (const name of ['Alice', 'Bob']) {
-      await page.getByTestId('new-user-input').fill(name);
-      await page.getByTestId('add-user-btn').click();
-    }
+    await addUser(page, 'Alice');
+    await addUser(page, 'Bob');
     // Bob was added last and becomes active.
     await expect(page.getByTestId('active-user')).toHaveText('Bob');
 
-    await page.getByTestId('user-select').selectOption({ label: 'Alice' });
+    await switchUser(page, 'Alice');
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
     await expect(page.getByTestId('active-user-banner')).toContainText('Betting as Alice');
+    // Switching closes the menu.
+    await expect(page.getByTestId('user-menu')).toBeHidden();
   });
 
   test('persists users and the active selection across reload', async ({ page }) => {
-    for (const name of ['Alice', 'Bob']) {
-      await page.getByTestId('new-user-input').fill(name);
-      await page.getByTestId('add-user-btn').click();
-    }
-    await page.getByTestId('user-select').selectOption({ label: 'Alice' });
+    await addUser(page, 'Alice');
+    await addUser(page, 'Bob');
+    await switchUser(page, 'Alice');
 
     await page.reload();
 
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
-    const options = page.getByTestId('user-select').locator('option');
-    await expect(options).toHaveCount(2);
+    await openUserMenu(page);
+    await expect(page.getByTestId('user-menu').locator('.user-menu-item')).toHaveCount(2);
   });
 
   test('removing the active user falls back to another user', async ({ page }) => {
-    for (const name of ['Alice', 'Bob']) {
-      await page.getByTestId('new-user-input').fill(name);
-      await page.getByTestId('add-user-btn').click();
-    }
-    // Active is Bob; accept the confirm dialog and remove him.
-    page.once('dialog', (d) => d.accept());
-    await page.getByTestId('remove-user-btn').click();
+    await addUser(page, 'Alice');
+    await addUser(page, 'Bob');
+
+    // Active is Bob; delete him via the trash icon (no confirm dialog).
+    await deleteUser(page, 'Bob');
 
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
-    await expect(page.getByTestId('user-select').locator('option')).toHaveCount(1);
+    await openUserMenu(page);
+    await expect(page.getByTestId('user-menu').locator('.user-menu-item')).toHaveCount(1);
   });
 });
