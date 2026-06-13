@@ -17,6 +17,7 @@ export function Header() {
           </NavLink>
           <NavLink to="/schedule">Schedule</NavLink>
           <NavLink to="/knockout">Knockout</NavLink>
+          <NavLink to="/points">Points</NavLink>
         </nav>
         {import.meta.env.DEV && <DevClock />}
         <UserMenu />

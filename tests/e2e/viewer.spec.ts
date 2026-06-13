@@ -32,13 +32,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Viewer mode — overlay across the three pages', () => {
-  test('Groups page becomes the viewer overview with leaderboard', async ({ page }) => {
+  test('Groups page becomes the viewer overview (no leaderboard)', async ({ page }) => {
     await expect(page.getByTestId('groups-page')).toBeVisible();
     await expect(page.getByTestId('active-user-banner')).toContainText('Viewer mode');
 
-    // Leaderboard totals points across finished matches.
-    await expect(page.getByTestId('leaderboard')).toBeVisible();
-    await expect(page.getByTestId('leaderboard-points-u-alice')).toHaveText('3');
+    // The leaderboard now lives on the Points tab, not under Groups.
+    await expect(page.getByTestId('leaderboard')).toHaveCount(0);
 
     // m001 has started: the bet and points are revealed.
     await expect(page.getByTestId('viewer-bets-m001')).toBeVisible();
@@ -48,6 +47,13 @@ test.describe('Viewer mode — overlay across the three pages', () => {
     // m072 has not started: guesses are hidden and not rendered.
     await expect(page.getByTestId('viewer-hidden-m072')).toBeVisible();
     await expect(page.getByTestId('viewer-bets-m072')).toHaveCount(0);
+  });
+
+  test('Points page shows the leaderboard (both modes)', async ({ page }) => {
+    await page.getByTestId('site-nav').getByRole('link', { name: 'Points' }).click();
+    await expect(page.getByTestId('points-page')).toBeVisible();
+    await expect(page.getByTestId('leaderboard')).toBeVisible();
+    await expect(page.getByTestId('leaderboard-points-u-alice')).toHaveText('3');
   });
 
   test('Schedule page shows guesses by date instead of inputs', async ({ page }) => {

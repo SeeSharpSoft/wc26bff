@@ -5,6 +5,7 @@ import { useViewerMode } from './context/ViewerModeContext';
 import { GroupsPage } from './pages/GroupsPage';
 import { SchedulePage } from './pages/SchedulePage';
 import { KnockoutPage } from './pages/KnockoutPage';
+import { PointsPage } from './pages/PointsPage';
 import './App.css';
 
 function ActiveUserBar() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/" element={<GroupsPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/knockout" element={<KnockoutPage />} />
+          <Route path="/points" element={<PointsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

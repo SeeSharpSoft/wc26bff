@@ -2,7 +2,6 @@ import { groups, getMatchesByGroup } from '../data';
 import { MatchCard } from '../components/MatchCard';
 import { StandingsTable } from '../components/StandingsTable';
 import { ViewerMatch } from '../components/ViewerMatch';
-import { Leaderboard } from '../components/Leaderboard';
 import { useViewerMode } from '../context/ViewerModeContext';
 
 function GroupsViewer() {
@@ -11,13 +10,9 @@ function GroupsViewer() {
       <h1>Viewer — Groups</h1>
       <p className="page-intro">
         Everyone's group-stage guesses, revealed at kickoff next to the actual result and
-        the points earned. The leaderboard totals points across all finished matches.
+        the points earned. See the <strong>Points</strong> tab for the leaderboard.
       </p>
 
-      <h2>Leaderboard</h2>
-      <Leaderboard />
-
-      <h2>Group matches</h2>
       {groups.map((group) => (
         <section
           key={group.id}
