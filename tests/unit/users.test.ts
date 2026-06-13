@@ -29,6 +29,12 @@ describe('makeUser', () => {
     expect(() => makeUser('')).toThrow();
   });
 
+  it('caps the name at 10 characters', () => {
+    const u = makeUser('SuperLongName', deps);
+    expect(u.name).toBe('SuperLongN');
+    expect(u.name).toHaveLength(10);
+  });
+
   it('generates unique ids by default', () => {
     const a = makeUser('A');
     const b = makeUser('B');

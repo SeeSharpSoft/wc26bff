@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { UserMenu } from './UserMenu';
 import { DevClock } from './DevClock';
-import { IconBall } from './icons';
 import './Header.css';
 
 export function Header() {
@@ -10,9 +9,9 @@ export function Header() {
       <div className="site-header-inner">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">
-            <IconBall />
+            ⚽
           </span>
-          <span className="brand-name">WC 2026 Betting</span>
+          <span className="brand-name">BetForFun WC26</span>
         </div>
         <nav className="site-nav" data-testid="site-nav">
           <NavLink to="/" end>

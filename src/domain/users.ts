@@ -21,9 +21,12 @@ function defaultNow(): string {
   return new Date().toISOString();
 }
 
+/** Maximum length of a user's display name. */
+export const MAX_USER_NAME_LENGTH = 10;
+
 /** Build a new user from a display name. Throws on an empty/blank name. */
 export function makeUser(name: string, deps: UserFactoryDeps = {}): User {
-  const trimmed = name.trim();
+  const trimmed = name.trim().slice(0, MAX_USER_NAME_LENGTH);
   if (!trimmed) throw new Error('User name must not be empty');
   return {
     id: (deps.id ?? defaultId)(),
@@ -49,7 +52,7 @@ export function removeUser(users: User[], id: string): User[] {
 
 /** Rename a user by id. Throws on an empty/blank name. */
 export function renameUser(users: User[], id: string, name: string): User[] {
-  const trimmed = name.trim();
+  const trimmed = name.trim().slice(0, MAX_USER_NAME_LENGTH);
   if (!trimmed) throw new Error('User name must not be empty');
   return users.map((u) => (u.id === id ? { ...u, name: trimmed } : u));
 }

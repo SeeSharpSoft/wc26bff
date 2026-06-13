@@ -437,10 +437,15 @@ Tournament data is **generated**, not hand-written:
   doesn't fit. The betting view is the leading UI: the viewer variant mirrors it, not the
   other way around. Section testids are shared (`group-section-*`, `knockout-stage-*`).
 
-- **2026-06-13** (UX) **Project icon = a classic soccer ball.** `public/favicon.svg` is the
-  browser favicon (white ball, dark pentagons + seams, clipped to the ball circle). The same
-  artwork is exposed in-app as the `IconBall` component (`components/icons.tsx`) and used as
-  the header brand mark and the About-dialog mark (replacing the `⚽` emoji) so the favicon
-  and the in-app logo stay identical. `IconBall` is a colored logo (own viewBox), unlike the
-  other stroke-only line icons. The favicon href in `index.html` is base-path-rewritten by
-  Vite (e.g. `/wc26bff/favicon.svg`) in the production build.
+- **2026-06-13** (UX) **Project icon = the `⚽` emoji.** `public/favicon.svg` renders the
+  soccer-ball emoji via an SVG `<text>` element (so the browser tab shows the platform's
+  emoji); the same emoji is the in-app header brand mark and the About-dialog mark. (An
+  earlier custom `IconBall` SVG was tried and reverted — the emoji reads better at small
+  sizes.) The favicon href in `index.html` is base-path-rewritten by Vite (e.g.
+  `/wc26bff/favicon.svg`) in the production build.
+- **2026-06-13** (UX) Browser **title is `BetForFun WC26`** (`index.html`); the in-app brand
+  name matches. The brand name now **stays visible below 640px** (previously hidden on mobile).
+- **2026-06-13** (Rule) **User display names are capped at 10 characters.** Enforced in the
+  pure domain (`makeUser`/`renameUser` slice to `MAX_USER_NAME_LENGTH = 10` in
+  `domain/users.ts`) and on the add-user input (`maxLength`). Keep this cap in mind for any
+  new name entry points.

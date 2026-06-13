@@ -184,3 +184,8 @@ Goal: make the viewer and betting views share the same structure/navigation.
   (`public/favicon.svg`) and reused the same artwork in-app via a new `IconBall` component
   for the header brand mark and the About dialog (dropping the `⚽` emoji). Build + lint
   clean; favicon path base-rewritten for Pages.
+- 2026-06-13: Branding/polish — browser title set to **"BetForFun WC26"**; favicon switched
+  to the **⚽ emoji** (SVG `<text>`) and reused as the in-app brand/About mark (reverted the
+  custom IconBall). Brand name now shows on mobile (<640px). **User names capped at 10 chars**
+  (`MAX_USER_NAME_LENGTH` in `domain/users.ts` + input `maxLength`; +1 unit test). Tests:
+  102 unit + 27 e2e green; build + lint clean.

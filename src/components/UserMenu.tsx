@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useResults } from '../context/ResultsContext';
 import { useViewerMode } from '../context/ViewerModeContext';
+import { MAX_USER_NAME_LENGTH } from '../domain/users';
 import { formatDateTime } from '../utils/time';
 import { AboutDialog } from './AboutDialog';
 import {
@@ -188,7 +189,7 @@ export function UserMenu() {
               data-testid="new-user-input"
               placeholder="New user name"
               value={name}
-              maxLength={40}
+              maxLength={MAX_USER_NAME_LENGTH}
               autoComplete="off"
               onChange={(e) => setName(e.target.value)}
             />
