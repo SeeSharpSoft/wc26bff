@@ -75,7 +75,7 @@ Goal: compare all users' bets vs actual results + ranking.
 - [x] Per-bet points display in viewer
 - [x] `domain/leaderboard.ts` + `Leaderboard`: total points per user, ranked (pts → exact → name)
 - [x] Reveal rule enforced: bets hidden until kickoff (privacy), locked thereafter
-- [x] Viewer route + header nav link
+- [x] Viewer route + header nav link _(later reworked into a global toggle — see "Viewer mode rework")_
 - [x] Unit tests (`leaderboard.test.ts`) — 6 new
 - [x] Playwright tests (`viewer.spec.ts`) — reveal/hide + leaderboard (3 tests)
 
@@ -96,7 +96,17 @@ Goal: production-ready quality.
 - [x] Unit tests for `devClock`, `validation`, storage quota (existing `scoring`/`locking`/`standings` retained)
 - [x] Final `DEVELOPMENT.md` review
 
----
+## Goal — Viewer mode rework ✅
+Goal: make viewer mode a global, non-user-specific view toggle that overlays the three
+main pages (not a separate route). Guesses still revealed only at kickoff and locked.
+- [x] `ViewerModeProvider`/`useViewerMode` context (in-memory toggle)
+- [x] Viewer toggle as the **top entry** of the user menu (closes menu on toggle)
+- [x] Extract reusable read-only `ViewerMatch` component (+ CSS) from old `ViewerPage`
+- [x] Groups page → viewer overview (leaderboard + group guesses) when viewer mode is on
+- [x] Schedule page → date-grouped guesses instead of inputs when viewer mode is on
+- [x] Knockout page → per-round guesses instead of inputs when viewer mode is on
+- [x] Remove `/viewer` route, `Viewer` nav link, and `ViewerPage`; viewer-aware active bar
+- [x] Update e2e helpers (`enterViewerMode`/`exitViewerMode`) + rewrite `viewer.spec.ts`
 
 ## Progress notes
 - 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.
@@ -146,3 +156,11 @@ Goal: production-ready quality.
   101 unit + 23 e2e green; build + lint clean.
 - 2026-06-13: Added an **About** dialog (opened from the user menu) with a concise app
   description and a GitHub repo link. Tests: 101 unit + 25 e2e green; build + lint clean.
+- 2026-06-13: **Viewer mode reworked** from a separate `/viewer` route into a global,
+  non-user-specific view toggle (top entry of the user menu, backed by `ViewerModeProvider`).
+  While on it overlays the three pages read-only: Groups → viewer overview (leaderboard +
+  group guesses), Schedule → date-grouped guesses, Knockout → per-round guesses. Extracted
+  a shared `ViewerMatch` component (keeps the kickoff reveal/lock rule); removed `ViewerPage`
+  and the Viewer nav link; active-user bar + menu trigger now reflect viewer mode. e2e
+  helpers gained `enterViewerMode`/`exitViewerMode`. Tests: 101 unit + 26 e2e green; build +
+  lint clean.

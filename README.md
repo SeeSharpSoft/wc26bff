@@ -4,8 +4,8 @@
 
 A browser-only web app where a group of friends predict the outcomes of the
 **FIFA World Cup 2026** matches. Pick a scoreline for every game, lock in your bets
-before kickoff, switch between users, and compare everyone's guesses against the real
-results in viewer mode.
+before kickoff, switch between users, and flip on **viewer mode** (a toggle in the user
+menu) to compare everyone's guesses against the real results.
 
 - **No backend** — all user data is stored in the browser (`localStorage`).
 - Scoring: exact score = **3 points**, correct tendency (win/draw/loss) = **1 point**,

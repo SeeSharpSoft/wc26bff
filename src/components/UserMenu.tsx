@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useResults } from '../context/ResultsContext';
+import { useViewerMode } from '../context/ViewerModeContext';
 import { formatDateTime } from '../utils/time';
 import { AboutDialog } from './AboutDialog';
 import {
   IconChevron,
+  IconEye,
   IconInfo,
   IconPlus,
   IconSync,
@@ -17,6 +19,7 @@ import './UserMenu.css';
 export function UserMenu() {
   const { users, activeUserId, activeUser, addUser, removeUser, switchUser } = useUser();
   const { status, error, lastSyncedAt, sync } = useResults();
+  const { viewerMode, toggleViewerMode } = useViewerMode();
 
   const [open, setOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -72,6 +75,11 @@ export function UserMenu() {
     setOpen(false);
   }
 
+  function handleToggleViewer() {
+    toggleViewerMode();
+    setOpen(false);
+  }
+
   const loading = status === 'loading';
 
   return (
@@ -85,9 +93,13 @@ export function UserMenu() {
         onClick={() => setOpen((v) => !v)}
       >
         <span className="user-menu-avatar" aria-hidden="true">
-          {activeUser ? <IconUser /> : <IconUsers />}
+          {viewerMode ? <IconEye /> : activeUser ? <IconUser /> : <IconUsers />}
         </span>
-        {activeUser ? (
+        {viewerMode ? (
+          <span className="active-user" data-testid="viewer-active">
+            Viewer mode
+          </span>
+        ) : activeUser ? (
           <span className="active-user" data-testid="active-user">
             {activeUser.name}
           </span>
@@ -103,6 +115,28 @@ export function UserMenu() {
 
       {open && (
         <div className="user-menu-popup" role="menu" data-testid="user-menu">
+          <button
+            type="button"
+            className={`user-menu-viewer${viewerMode ? ' is-active' : ''}`}
+            data-testid="viewer-toggle"
+            aria-pressed={viewerMode}
+            onClick={handleToggleViewer}
+          >
+            <span className="user-menu-viewer-icon" aria-hidden="true">
+              <IconEye />
+            </span>
+            <span className="user-menu-viewer-text">
+              {viewerMode ? 'Exit viewer mode' : 'Viewer mode'}
+            </span>
+            {viewerMode && (
+              <span className="user-menu-active-tag" aria-hidden="true">
+                on
+              </span>
+            )}
+          </button>
+
+          <div className="user-menu-divider" role="separator" />
+
           <p className="user-menu-heading">Switch user</p>
 
           {users.length > 0 ? (

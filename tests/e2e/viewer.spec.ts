@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { enterViewerMode } from './helpers';
 
 const FIXED = new Date('2026-06-15T12:00:00Z');
 
@@ -27,29 +28,49 @@ test.beforeEach(async ({ page }) => {
   );
   await page.reload();
   await page.getByTestId('site-nav').waitFor();
-  await page.getByTestId('site-nav').getByRole('link', { name: 'Viewer' }).click();
-  await expect(page.getByTestId('viewer-page')).toBeVisible();
+  await enterViewerMode(page);
 });
 
-test.describe('Phase 5 — viewer mode & leaderboard', () => {
-  test('reveals bets only after kickoff', async ({ page }) => {
+test.describe('Viewer mode — overlay across the three pages', () => {
+  test('Groups page becomes the viewer overview with leaderboard', async ({ page }) => {
+    await expect(page.getByTestId('groups-page')).toBeVisible();
+    await expect(page.getByTestId('active-user-banner')).toContainText('Viewer mode');
+
+    // Leaderboard totals points across finished matches.
+    await expect(page.getByTestId('leaderboard')).toBeVisible();
+    await expect(page.getByTestId('leaderboard-points-u-alice')).toHaveText('3');
+
     // m001 has started: the bet and points are revealed.
     await expect(page.getByTestId('viewer-bets-m001')).toBeVisible();
     await expect(page.getByTestId('viewer-bet-m001-u-alice')).toContainText('2–0');
     await expect(page.getByTestId('viewer-points-m001-u-alice')).toContainText('3');
 
-    // m072 has not started: bets are hidden and not rendered.
+    // m072 has not started: guesses are hidden and not rendered.
     await expect(page.getByTestId('viewer-hidden-m072')).toBeVisible();
     await expect(page.getByTestId('viewer-bets-m072')).toHaveCount(0);
-    await expect(page.getByTestId('viewer-bet-m072-u-alice')).toHaveCount(0);
   });
 
-  test('shows the actual result next to the fixture', async ({ page }) => {
-    await expect(page.getByTestId('viewer-result-m001')).toContainText('2');
+  test('Schedule page shows guesses by date instead of inputs', async ({ page }) => {
+    await page.getByTestId('site-nav').getByRole('link', { name: 'Schedule' }).click();
+    await expect(page.getByTestId('schedule-page')).toBeVisible();
+
+    // No bet inputs in viewer mode; revealed guess for the started opener instead.
+    await expect(page.getByTestId('bet-m001')).toHaveCount(0);
+    await expect(page.getByTestId('viewer-bet-m001-u-alice')).toContainText('2–0');
   });
 
-  test('leaderboard totals points across finished matches', async ({ page }) => {
-    await expect(page.getByTestId('leaderboard')).toBeVisible();
-    await expect(page.getByTestId('leaderboard-points-u-alice')).toHaveText('3');
+  test('Knockout page shows guesses instead of inputs', async ({ page }) => {
+    await page.getByTestId('site-nav').getByRole('link', { name: 'Knockout' }).click();
+    await expect(page.getByTestId('knockout-page')).toBeVisible();
+    await expect(page.getByTestId('viewer-stage-round32')).toBeVisible();
+    // Knockout matches have not kicked off yet: guesses stay hidden.
+    await expect(page.getByTestId('bet-m073')).toHaveCount(0);
+  });
+
+  test('exiting viewer mode restores the betting UI', async ({ page }) => {
+    await page.getByTestId('user-menu-trigger').click();
+    await page.getByTestId('viewer-toggle').click();
+    await expect(page.getByTestId('active-user')).toHaveText('Alice');
+    await expect(page.getByTestId('active-user-banner')).toContainText('Betting as Alice');
   });
 });

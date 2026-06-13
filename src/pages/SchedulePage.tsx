@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { getMatchesByStage } from '../data';
 import type { Match } from '../types';
 import { MatchCard } from '../components/MatchCard';
+import { ViewerMatch } from '../components/ViewerMatch';
 import { formatDate } from '../utils/time';
+import { useViewerMode } from '../context/ViewerModeContext';
 
 interface DayGroup {
   key: string;
@@ -32,24 +34,34 @@ function groupByLocalDate(matches: Match[]): DayGroup[] {
 }
 
 export function SchedulePage() {
+  const { viewerMode } = useViewerMode();
   const days = useMemo(() => groupByLocalDate(getMatchesByStage('group')), []);
 
   return (
     <div className="page" data-testid="schedule-page">
-      <h1>Schedule</h1>
+      <h1>{viewerMode ? 'Viewer — Schedule' : 'Schedule'}</h1>
       <p className="page-intro">
-        All group-stage matches by day (your local time). Predict each scoreline before
-        kickoff.
+        {viewerMode
+          ? "All group-stage matches by day (your local time). Everyone's guesses are revealed at kickoff."
+          : 'All group-stage matches by day (your local time). Predict each scoreline before kickoff.'}
       </p>
 
       {days.map((day) => (
         <section key={day.key} className="day-section" data-testid={`day-${day.key}`}>
           <h2 className="day-heading">{day.label}</h2>
-          <div className="match-grid">
-            {day.matches.map((m) => (
-              <MatchCard key={m.id} match={m} />
-            ))}
-          </div>
+          {viewerMode ? (
+            <div className="viewer-group">
+              {day.matches.map((m) => (
+                <ViewerMatch key={m.id} match={m} />
+              ))}
+            </div>
+          ) : (
+            <div className="match-grid">
+              {day.matches.map((m) => (
+                <MatchCard key={m.id} match={m} />
+              ))}
+            </div>
+          )}
         </section>
       ))}
     </div>

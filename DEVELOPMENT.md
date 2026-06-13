@@ -22,6 +22,10 @@ Core requirements:
   user only sees their own guesses while betting.
 - A **viewer mode** shows every user's guesses next to the **actual results**.
   - A user's guess is revealed in viewer mode **only once the match has started**.
+  - Viewer mode is a **global, non-user-specific view toggle** (top entry of the user
+    menu), not a separate route. While active it overlays the three main pages: Groups
+    becomes a viewer overview (leaderboard + group guesses), Schedule shows guesses by
+    date, and Knockout shows guesses per round — all read-only.
 - **Scoring**: exact score = **3 points**, correct tendency (home win / draw / away win)
   = **1 point**, otherwise **0 points**.
 - **All data is stored in the browser** (localStorage). No backend, no network calls
@@ -35,7 +39,7 @@ Core requirements:
 |----------------|--------------------------------|-----|
 | Build tool     | Vite                           | Fast dev server, simple config. |
 | UI             | React 19 + TypeScript          | Type safety for data model; another dev can continue safely. |
-| Routing        | react-router-dom               | Multiple views (groups, schedule, knockout, viewer). |
+| Routing        | react-router-dom               | Main views (groups, schedule, knockout); viewer mode overlays these via context. |
 | State          | React Context + custom hooks   | Small app; avoids extra deps. Persisted to localStorage. |
 | Persistence    | `localStorage` via typed wrapper | Requirement: all data in browser. |
 | Styling        | Plain CSS / CSS Modules        | Keep dependencies minimal (revisit if a UI lib is wanted). |
@@ -161,14 +165,14 @@ src/
   storage/         # localStorage.ts (typed wrapper + keys + fallback); users.ts, bets.ts, results.ts; validation.ts (sanitisers)
   domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts, bracket.ts, stages.ts
   services/        # resultsParser.ts (pure text→scores), resultsSync.ts (fetch+map, on-demand)
-  context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…, Bracket…
-  components/      # Header, UserMenu, AboutDialog, icons, MatchCard, BetInput, StandingsTable, Leaderboard, DevClock
-  pages/           # GroupsPage, SchedulePage, KnockoutPage, ViewerPage
+  context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…, Bracket…, ViewerMode…
+  components/      # Header, UserMenu, AboutDialog, icons, MatchCard, BetInput, ViewerMatch, StandingsTable, Leaderboard, DevClock
+  pages/           # GroupsPage, SchedulePage, KnockoutPage (each renders a viewer variant when viewer mode is on)
   hooks/           # useNow.ts (interval-refreshed clock for live locking; honours dev override)
   utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts, devClock.ts (dev-only now override)
   types.ts         # domain model (single source of truth)
-  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule, /knockout, /viewer
-  main.tsx         # <UserProvider><ResultsProvider><BracketProvider><BetsProvider><App/></…>
+  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule, /knockout
+  main.tsx         # <UserProvider><ResultsProvider><BracketProvider><BetsProvider><ViewerModeProvider><App/></…>
 scripts/
   build-data.mjs   # source .txt -> src/data/generated.ts generator
 tests/
@@ -256,10 +260,11 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
 | `src/domain/standings.ts` | Pure group-standings computation. |
 | `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
-| `src/pages/GroupsPage.tsx` | 12 group sections (standings + `MatchCard`s). |
-| `src/pages/SchedulePage.tsx` | Group matches grouped by local calendar day. |
-| `src/pages/ViewerPage.tsx` | Viewer mode: revealed bets + results + leaderboard (group + knockout). |
-| `src/pages/KnockoutPage.tsx` | Knockout stage (`/knockout`): R32→Final sections of `MatchCard`s. |
+| `src/pages/GroupsPage.tsx` | 12 group sections (standings + `MatchCard`s); renders the viewer overview (leaderboard + group guesses) in viewer mode. |
+| `src/pages/SchedulePage.tsx` | Group matches grouped by local calendar day; shows guesses (`ViewerMatch`) instead of inputs in viewer mode. |
+| `src/components/ViewerMatch.tsx` | Read-only match card: fixture + actual result + every user's guess (revealed only after kickoff). Shared by all viewer-mode pages. |
+| `src/context/ViewerModeProvider.tsx` | Global viewer-mode toggle (not persisted); `useViewerMode` in `ViewerModeContext.ts`. |
+| `src/pages/KnockoutPage.tsx` | Knockout stage (`/knockout`): R32→Final sections of `MatchCard`s; shows guesses in viewer mode. |
 | `src/domain/bracket.ts` | Pure `computeBracket(matches, results)`: resolves placeholder refs to a fixpoint. |
 | `src/domain/stages.ts` | `KNOCKOUT_STAGES` ordered list (excludes group). |
 | `src/context/BracketProvider.tsx` | Memoizes bracket resolution; `useBracket().getRefs` in `BracketContext.ts`. |
@@ -405,4 +410,13 @@ Tournament data is **generated**, not hand-written:
   `dist/` via the Pages "GitHub Actions" source on every push to `main`. `package.json`
   carries the full metadata (name, version, description, license MIT, author, homepage,
   repository, bugs, keywords); `LICENSE` added.
+- **2026-06-13** (UX) **Viewer mode reworked into a global view toggle.** It is no longer a
+  separate `/viewer` route/nav link; instead it is the **top entry of the user menu**
+  (`viewer-toggle`) backed by `ViewerModeProvider` (in-memory, not persisted). When on, the
+  three main pages render read-only viewer variants: Groups → a viewer overview (leaderboard
+  + group guesses), Schedule → the same date-grouped layout but showing guesses, Knockout →
+  the same round sections showing guesses. All variants reuse the shared `ViewerMatch`
+  component, which keeps the privacy rule (`isMatchStarted`): guesses stay hidden and locked
+  until kickoff. The trigger and active-user bar reflect viewer mode; toggling closes the
+  menu. e2e helpers add `enterViewerMode`/`exitViewerMode`.
 

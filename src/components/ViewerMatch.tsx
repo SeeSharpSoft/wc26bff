@@ -1,6 +1,5 @@
 import type { Match, TeamRef } from '../types';
-import { groups, getMatchesByGroup, getMatchesByStage, getTeam, flagUrl, teamRefLabel } from '../data';
-import { KNOCKOUT_STAGES } from '../domain/stages';
+import { flagUrl, getTeam, teamRefLabel } from '../data';
 import { formatDateTime, localTimeZoneLabel } from '../utils/time';
 import { isMatchStarted } from '../utils/locking';
 import { scoreBet } from '../utils/scoring';
@@ -10,8 +9,7 @@ import { useUser } from '../context/UserContext';
 import { useBets } from '../context/BetsContext';
 import { useResults } from '../context/ResultsContext';
 import { useBracket } from '../context/BracketContext';
-import { Leaderboard } from '../components/Leaderboard';
-import './ViewerPage.css';
+import './ViewerMatch.css';
 
 function teamLabel(ref: TeamRef): string {
   if (ref.kind !== 'team') return teamRefLabel(ref);
@@ -28,7 +26,12 @@ function TeamName({ teamRef }: { teamRef: TeamRef }) {
   );
 }
 
-function ViewerMatch({ match }: { match: Match }) {
+/**
+ * Read-only match card used throughout viewer mode. Shows the fixture, the actual
+ * result, and every user's guess — but only once the match has started (guesses
+ * stay hidden and locked before kickoff).
+ */
+export function ViewerMatch({ match }: { match: Match }) {
   const now = useNow();
   const { users } = useUser();
   const { allBets } = useBets();
@@ -65,7 +68,7 @@ function ViewerMatch({ match }: { match: Match }) {
 
       {!started ? (
         <p className="viewer-hidden" data-testid={`viewer-hidden-${match.id}`}>
-          🔒 Bets are hidden until kickoff.
+          🔒 Guesses are hidden until kickoff.
         </p>
       ) : users.length === 0 ? (
         <p className="viewer-hidden">No users yet.</p>
@@ -94,52 +97,5 @@ function ViewerMatch({ match }: { match: Match }) {
         </ul>
       )}
     </article>
-  );
-}
-
-export function ViewerPage() {
-  return (
-    <div className="page" data-testid="viewer-page">
-      <h1>Viewer</h1>
-      <p className="page-intro">
-        Everyone's predictions become visible at kickoff, next to the actual result and
-        the points earned. The leaderboard totals points across all finished matches.
-      </p>
-
-      <h2>Leaderboard</h2>
-      <Leaderboard />
-
-      <h2>Group matches</h2>
-      {groups.map((group) => (
-        <section
-          key={group.id}
-          className="viewer-group"
-          data-testid={`viewer-group-${group.id}`}
-        >
-          <h3>Group {group.id}</h3>
-          {getMatchesByGroup(group.id).map((m) => (
-            <ViewerMatch key={m.id} match={m} />
-          ))}
-        </section>
-      ))}
-
-      <h2>Knockout matches</h2>
-      {KNOCKOUT_STAGES.map((stage) => {
-        const stageMatches = getMatchesByStage(stage);
-        if (stageMatches.length === 0) return null;
-        return (
-          <section
-            key={stage}
-            className="viewer-group"
-            data-testid={`viewer-stage-${stage}`}
-          >
-            <h3>{stageMatches[0].roundLabel}</h3>
-            {stageMatches.map((m) => (
-              <ViewerMatch key={m.id} match={m} />
-            ))}
-          </section>
-        );
-      })}
-    </div>
   );
 }

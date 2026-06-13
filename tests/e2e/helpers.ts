@@ -35,3 +35,17 @@ export async function syncResults(page: Page) {
   await openUserMenu(page);
   await page.getByTestId('sync-btn').click();
 }
+
+/** Enable viewer mode via the top entry in the menu (which then closes). */
+export async function enterViewerMode(page: Page) {
+  await openUserMenu(page);
+  await page.getByTestId('viewer-toggle').click();
+  await expect(page.getByTestId('viewer-active')).toBeVisible();
+}
+
+/** Disable viewer mode via the top entry in the menu (which then closes). */
+export async function exitViewerMode(page: Page) {
+  await openUserMenu(page);
+  await page.getByTestId('viewer-toggle').click();
+  await expect(page.getByTestId('viewer-active')).toHaveCount(0);
+}

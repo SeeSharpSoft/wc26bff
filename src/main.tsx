@@ -6,6 +6,7 @@ import { UserProvider } from './context/UserProvider'
 import { BetsProvider } from './context/BetsProvider'
 import { ResultsProvider } from './context/ResultsProvider'
 import { BracketProvider } from './context/BracketProvider'
+import { ViewerModeProvider } from './context/ViewerModeProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <ResultsProvider>
         <BracketProvider>
           <BetsProvider>
-            <App />
+            <ViewerModeProvider>
+              <App />
+            </ViewerModeProvider>
           </BetsProvider>
         </BracketProvider>
       </ResultsProvider>
