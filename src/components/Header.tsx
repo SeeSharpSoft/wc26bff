@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { UserSwitcher } from './UserSwitcher';
 import { SyncButton } from './SyncButton';
+import { DevClock } from './DevClock';
 import './Header.css';
 
 export function Header() {
@@ -20,6 +21,7 @@ export function Header() {
           <NavLink to="/viewer">Viewer</NavLink>
         </nav>
         <SyncButton />
+        {import.meta.env.DEV && <DevClock />}
         <UserSwitcher />
       </div>
     </header>

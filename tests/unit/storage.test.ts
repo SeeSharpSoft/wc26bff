@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import {
   KEYS,
   __resetStorageForTests,
   clearAll,
   ensureSchemaVersion,
+  getLastStorageError,
   readJSON,
   removeKey,
   writeJSON,
@@ -54,6 +55,20 @@ describe('localStorage wrapper', () => {
     expect(readJSON(KEYS.schemaVersion, null)).toBeNull();
     ensureSchemaVersion();
     expect(readJSON(KEYS.schemaVersion, null)).toBe(1);
+  });
+
+  it('writeJSON reports success and surfaces quota failures', () => {
+    expect(writeJSON(KEYS.activeUserId, 'ok')).toBe(true);
+    expect(getLastStorageError()).toBeNull();
+
+    // A value with a circular reference cannot be JSON-serialised, exercising
+    // the failure path the same way a quota error would.
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(writeJSON(KEYS.users, circular)).toBe(false);
+    expect(getLastStorageError()).not.toBeNull();
+    warn.mockRestore();
   });
 });
 

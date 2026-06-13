@@ -88,13 +88,13 @@ Goal: bracket progression and knockout betting.
 - [x] Unit tests (`bracket.test.ts` + parser/sync extensions) — 6 new
 - [x] Playwright tests (`knockout.spec.ts`) — 3 tests
 
-## Phase 7 — Polish & hardening ⬜
+## Phase 7 — Polish & hardening ✅
 Goal: production-ready quality.
-- [ ] Styling pass / responsive layout
-- [ ] Edge cases: storage quota, corrupt data, schema migration/versioning
-- [ ] Dev "now" override for testing locking
-- [ ] Unit tests for `scoring`, `locking`, `standings`
-- [ ] Final `DEVELOPMENT.md` review
+- [x] Responsive styling pass (header nav wraps/scrolls on mobile)
+- [x] Edge cases: storage quota surfaced (`writeJSON` → bool + `getLastStorageError`), corrupt-data validation (`storage/validation.ts`), schema versioning reviewed
+- [x] Dev "now" override for testing locking (`utils/devClock.ts` + `DevClock`, dev-only)
+- [x] Unit tests for `devClock`, `validation`, storage quota (existing `scoring`/`locking`/`standings` retained)
+- [x] Final `DEVELOPMENT.md` review
 
 ---
 
@@ -130,3 +130,11 @@ Goal: production-ready quality.
   `useBracket().getRefs`. Results sync now also pulls `cup_finals.txt`, mapping knockout
   scores by official match number. Tests: 89 unit + 21 e2e all green; build + lint clean.
   Awaiting approval to start Phase 7 (polish & hardening).
+- 2026-06-13: Phase 7 complete. Hardening + polish: a dev-only clock override
+  (`utils/devClock.ts` + `DevClock`, gated on `import.meta.env.DEV`) lets `useNow` pretend
+  it's any instant for testing kickoff locking. Storage is hardened — `writeJSON` now
+  reports success and records the last failure (`getLastStorageError`) so quota errors are
+  surfaced, and all persisted data is validated/sanitised on read (`storage/validation.ts`:
+  drops malformed users/bets/results instead of trusting raw JSON). Responsive header
+  (nav wraps/scrolls, brand label hides on small screens). Tests: 101 unit + 22 e2e all
+  green; build + lint clean. **Project feature-complete across Phases 1–7.**

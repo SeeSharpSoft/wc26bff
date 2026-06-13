@@ -1,13 +1,13 @@
 // Persistence accessors for synced results.
 
 import { KEYS, readJSON, writeJSON } from './localStorage';
+import { sanitizeResults } from './validation';
 import type { Result } from '../types';
 
 export type ResultsByMatch = Record<string, Result>;
 
 export function loadResults(): ResultsByMatch {
-  const r = readJSON<ResultsByMatch>(KEYS.results, {});
-  return r && typeof r === 'object' && !Array.isArray(r) ? r : {};
+  return sanitizeResults(readJSON<unknown>(KEYS.results, {}));
 }
 
 export function saveResults(results: ResultsByMatch): void {

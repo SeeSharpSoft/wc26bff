@@ -79,13 +79,30 @@ export function readJSON<T>(key: string, fallback: T): T {
   }
 }
 
-/** JSON-serialise and write a value. Swallows quota/serialisation errors. */
-export function writeJSON<T>(key: string, value: T): void {
+/** JSON-serialise and write a value. Returns `false` on quota/serialisation
+ * errors (e.g. storage full) instead of throwing, so callers can keep running
+ * with in-memory state. The most recent failure is recorded for the UI to
+ * surface via {@link getLastStorageError}. */
+export function writeJSON<T>(key: string, value: T): boolean {
   try {
     storage().setItem(key, JSON.stringify(value));
-  } catch {
-    // ignore (quota exceeded, etc.)
+    lastStorageError = null;
+    return true;
+  } catch (err) {
+    lastStorageError = err instanceof Error ? err.message : String(err);
+    if (typeof console !== 'undefined') {
+      console.warn(`wc26: failed to persist "${key}" — ${lastStorageError}`);
+    }
+    return false;
   }
+}
+
+let lastStorageError: string | null = null;
+
+/** The message of the most recent failed write, or `null` if the last write
+ * succeeded. Lets the UI warn the user that changes may not persist. */
+export function getLastStorageError(): string | null {
+  return lastStorageError;
 }
 
 export function removeKey(key: string): void {
