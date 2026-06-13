@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { IconClose, IconExternalLink } from './icons';
+import { IconBall, IconClose, IconExternalLink } from './icons';
 import './AboutDialog.css';
 
 const REPO_URL = 'https://github.com/SeeSharpSoft/wc26bff';
@@ -46,7 +46,7 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
 
         <h2 id="about-title" className="about-title">
           <span className="about-mark" aria-hidden="true">
-            ⚽
+            <IconBall />
           </span>
           World Cup 2026 — Friends Betting
         </h2>

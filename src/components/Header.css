@@ -26,6 +26,8 @@
 
 .brand-mark {
   font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .site-nav {

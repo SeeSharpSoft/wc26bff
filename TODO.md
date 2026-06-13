@@ -180,3 +180,7 @@ Goal: make the viewer and betting views share the same structure/navigation.
   matches container differs: `MatchCard` inputs in betting vs `ViewerMatch` guesses in
   viewer. Betting view leads; viewer mirrors it. Shared section testids. Tests: 101 unit +
   27 e2e green; build + lint clean.
+- 2026-06-13: Project icon — replaced the placeholder favicon with a **classic soccer ball**
+  (`public/favicon.svg`) and reused the same artwork in-app via a new `IconBall` component
+  for the header brand mark and the About dialog (dropping the `⚽` emoji). Build + lint
+  clean; favicon path base-rewritten for Pages.

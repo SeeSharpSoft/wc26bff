@@ -71,6 +71,8 @@
 
 .about-mark {
   font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .about-dialog p {

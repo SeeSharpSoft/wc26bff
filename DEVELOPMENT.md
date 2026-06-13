@@ -437,3 +437,10 @@ Tournament data is **generated**, not hand-written:
   doesn't fit. The betting view is the leading UI: the viewer variant mirrors it, not the
   other way around. Section testids are shared (`group-section-*`, `knockout-stage-*`).
 
+- **2026-06-13** (UX) **Project icon = a classic soccer ball.** `public/favicon.svg` is the
+  browser favicon (white ball, dark pentagons + seams, clipped to the ball circle). The same
+  artwork is exposed in-app as the `IconBall` component (`components/icons.tsx`) and used as
+  the header brand mark and the About-dialog mark (replacing the `⚽` emoji) so the favicon
+  and the in-app logo stay identical. `IconBall` is a colored logo (own viewBox), unlike the
+  other stroke-only line icons. The favicon href in `index.html` is base-path-rewritten by
+  Vite (e.g. `/wc26bff/favicon.svg`) in the production build.
