@@ -51,4 +51,18 @@ describe('syncResults', () => {
       }),
     ).rejects.toThrow(/404/);
   });
+
+  it('maps knockout lines by their official match number', async () => {
+    const finals = `
+▪ Round of 32
+Sun Jun 28
+  (73) 12:00 UTC-7  Spain 2-1 France   @ Los Angeles (Inglewood)
+`;
+    const results = await syncResults({
+      sources: ['http://example.test/cup_finals.txt'],
+      fetchImpl: fakeFetch(finals),
+    });
+    // Match number 73 is m073 regardless of which teams actually play.
+    expect(results.m073).toMatchObject({ homeGoals: 2, awayGoals: 1, status: 'finished' });
+  });
 });

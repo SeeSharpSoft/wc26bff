@@ -152,21 +152,21 @@ src/
     generated.ts     # AUTO-GENERATED teams/groups/matches — do not edit
     index.ts         # public API + helpers (getTeam, flagUrl, resolveTeamRef, …)
   storage/         # localStorage.ts (typed wrapper + keys + fallback); users.ts, bets.ts, results.ts
-  domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts
+  domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts, bracket.ts, stages.ts
   services/        # resultsParser.ts (pure text→scores), resultsSync.ts (fetch+map, on-demand)
-  context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…
+  context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…, Bracket…
   components/      # Header, UserSwitcher, SyncButton, MatchCard, BetInput, StandingsTable, Leaderboard
-  pages/           # GroupsPage, SchedulePage, ViewerPage; KnockoutPage (Phase 6)
+  pages/           # GroupsPage, SchedulePage, KnockoutPage, ViewerPage
   hooks/           # useNow.ts (interval-refreshed clock for live locking)
   utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts
   types.ts         # domain model (single source of truth)
-  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule, /viewer
-  main.tsx         # <UserProvider><ResultsProvider><BetsProvider><App/></…></…></…>
+  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule, /knockout, /viewer
+  main.tsx         # <UserProvider><ResultsProvider><BracketProvider><BetsProvider><App/></…>
 scripts/
   build-data.mjs   # source .txt -> src/data/generated.ts generator
 tests/
-  unit/            # Jest: data, users, storage, bets, locking, time, scoring, standings, leaderboard, resultsParser, resultsSync
-  e2e/             # Playwright: groups, betting, users, results, viewer
+  unit/            # Jest: data, users, storage, bets, locking, time, scoring, standings, leaderboard, resultsParser, resultsSync, bracket
+  e2e/             # Playwright: groups, betting, users, results, viewer, knockout
 ```
 
 Context split note: `UserContext.ts` (context object + `useUser` hook) is intentionally
@@ -243,7 +243,11 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
 | `src/pages/GroupsPage.tsx` | 12 group sections (standings + `MatchCard`s). |
 | `src/pages/SchedulePage.tsx` | Group matches grouped by local calendar day. |
-| `src/pages/ViewerPage.tsx` | Viewer mode: revealed bets + results + leaderboard. |
+| `src/pages/ViewerPage.tsx` | Viewer mode: revealed bets + results + leaderboard (group + knockout). |
+| `src/pages/KnockoutPage.tsx` | Knockout stage (`/knockout`): R32→Final sections of `MatchCard`s. |
+| `src/domain/bracket.ts` | Pure `computeBracket(matches, results)`: resolves placeholder refs to a fixpoint. |
+| `src/domain/stages.ts` | `KNOCKOUT_STAGES` ordered list (excludes group). |
+| `src/context/BracketProvider.tsx` | Memoizes bracket resolution; `useBracket().getRefs` in `BracketContext.ts`. |
 | `src/hooks/useNow.ts` | Interval-refreshed clock so locking updates while the page is open. |
 | `src/utils/time.ts` | Date/time formatting in the browser's local timezone. |
 | `src/utils/locking.ts` | Bet lock / reveal rules (pure, time-injectable). |
@@ -337,4 +341,16 @@ Tournament data is **generated**, not hand-written:
   (`domain/leaderboard.ts`) over `allBets` × finished results, ranked by points → exact
   hits → name. The viewer e2e seeds users/bets directly into `localStorage` to exercise
   reveal of an already-started match.
+- **2026-06-12** (Phase 6) Knockout placeholders resolve through a pure fixpoint in
+  `domain/bracket.ts`: `1A`/`2A` from a **completed** group's standings, `W##`/`L##` from
+  finished knockout results (iterated since later matches reference earlier winners). A
+  drawn knockout score leaves the winner unresolved because the goal score alone can't
+  capture a penalty shootout. Best-third refs (`3A/B/C/D/F`) are **deliberately not
+  resolved** — that needs FIFA's official third-place combination table; they stay as
+  placeholders. `BracketProvider` memoizes resolution on `results`; UI reads it via
+  `useBracket().getRefs(matchId)` (falls back to the match's own refs). Knockout fixtures
+  reuse `MatchCard`, so betting/locking/scoring are unchanged.
+- **2026-06-12** (Phase 6) Results sync also pulls `cup_finals.txt`; knockout lines carry
+  official numbers `(NN)` so they map by `match.number`, while group lines (no number) map
+  by team pair. `resultsParser` tolerates penalty annotations like `(1-1, 4-2 pen)`.
 - **Open:** dev-time "now" override to test locking before/around real kickoff times.

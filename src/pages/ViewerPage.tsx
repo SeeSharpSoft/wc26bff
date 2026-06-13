@@ -1,5 +1,6 @@
 import type { Match, TeamRef } from '../types';
-import { groups, getMatchesByGroup, getTeam, flagUrl, teamRefLabel } from '../data';
+import { groups, getMatchesByGroup, getMatchesByStage, getTeam, flagUrl, teamRefLabel } from '../data';
+import { KNOCKOUT_STAGES } from '../domain/stages';
 import { formatDateTime, localTimeZoneLabel } from '../utils/time';
 import { isMatchStarted } from '../utils/locking';
 import { scoreBet } from '../utils/scoring';
@@ -8,6 +9,7 @@ import { useNow } from '../hooks/useNow';
 import { useUser } from '../context/UserContext';
 import { useBets } from '../context/BetsContext';
 import { useResults } from '../context/ResultsContext';
+import { useBracket } from '../context/BracketContext';
 import { Leaderboard } from '../components/Leaderboard';
 import './ViewerPage.css';
 
@@ -31,6 +33,8 @@ function ViewerMatch({ match }: { match: Match }) {
   const { users } = useUser();
   const { allBets } = useBets();
   const { getResult } = useResults();
+  const { getRefs } = useBracket();
+  const refs = getRefs(match.id);
 
   const started = isMatchStarted(match, now);
   const result = getResult(match.id);
@@ -40,7 +44,7 @@ function ViewerMatch({ match }: { match: Match }) {
     <article className="viewer-match" data-testid={`viewer-match-${match.id}`}>
       <div className="viewer-match-head">
         <span className="viewer-fixture">
-          <TeamName teamRef={match.home} />
+          <TeamName teamRef={refs.home} />
           <span className="viewer-score" data-testid={`viewer-result-${match.id}`}>
             {result ? (
               <strong>
@@ -52,7 +56,7 @@ function ViewerMatch({ match }: { match: Match }) {
               <span className="vs">v</span>
             )}
           </span>
-          <TeamName teamRef={match.away} />
+          <TeamName teamRef={refs.away} />
         </span>
         <span className="viewer-kickoff">
           {formatDateTime(match.kickoff)} {localTimeZoneLabel(match.kickoff)}
@@ -105,7 +109,7 @@ export function ViewerPage() {
       <h2>Leaderboard</h2>
       <Leaderboard />
 
-      <h2>Matches</h2>
+      <h2>Group matches</h2>
       {groups.map((group) => (
         <section
           key={group.id}
@@ -118,6 +122,24 @@ export function ViewerPage() {
           ))}
         </section>
       ))}
+
+      <h2>Knockout matches</h2>
+      {KNOCKOUT_STAGES.map((stage) => {
+        const stageMatches = getMatchesByStage(stage);
+        if (stageMatches.length === 0) return null;
+        return (
+          <section
+            key={stage}
+            className="viewer-group"
+            data-testid={`viewer-stage-${stage}`}
+          >
+            <h3>{stageMatches[0].roundLabel}</h3>
+            {stageMatches.map((m) => (
+              <ViewerMatch key={m.id} match={m} />
+            ))}
+          </section>
+        );
+      })}
     </div>
   );
 }

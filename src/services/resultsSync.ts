@@ -11,6 +11,7 @@ import { parseResultsText } from './resultsParser';
 
 export const DEFAULT_RESULT_SOURCES = [
   'https://raw.githubusercontent.com/openfootball/worldcup/master/2026--usa/cup.txt',
+  'https://raw.githubusercontent.com/openfootball/worldcup/master/2026--usa/cup_finals.txt',
 ];
 
 export interface SyncOptions {
@@ -22,7 +23,10 @@ const nameToId = new Map(teams.map((t) => [t.name, t.id] as const));
 
 // Unique (homeTeamId|awayTeamId) -> matchId for group-stage fixtures.
 const pairToMatchId = new Map<string, string>();
+// Official match number -> matchId (used for knockout lines that carry "(NN)").
+const numberToMatchId = new Map<number, string>();
 for (const m of allMatches) {
+  numberToMatchId.set(m.number, m.id);
   if (m.stage === 'group' && m.home.kind === 'team' && m.away.kind === 'team') {
     pairToMatchId.set(`${m.home.teamId}|${m.away.teamId}`, m.id);
   }
@@ -30,7 +34,9 @@ for (const m of allMatches) {
 
 /**
  * Fetch the configured source(s) and return a `matchId -> Result` map of all
- * finished group-stage matches found. Throws if a source cannot be fetched.
+ * finished matches found. Group-stage lines are mapped by team pair; knockout
+ * lines (which carry an official match number) are mapped by that number.
+ * Throws if a source cannot be fetched.
  */
 export async function syncResults(
   options: SyncOptions = {},
@@ -46,10 +52,14 @@ export async function syncResults(
     }
     const text = await response.text();
     for (const parsed of parseResultsText(text)) {
-      const homeId = nameToId.get(parsed.homeName);
-      const awayId = nameToId.get(parsed.awayName);
-      if (!homeId || !awayId) continue;
-      const matchId = pairToMatchId.get(`${homeId}|${awayId}`);
+      let matchId: string | undefined;
+      if (parsed.number !== undefined) {
+        matchId = numberToMatchId.get(parsed.number);
+      } else {
+        const homeId = nameToId.get(parsed.homeName);
+        const awayId = nameToId.get(parsed.awayName);
+        if (homeId && awayId) matchId = pairToMatchId.get(`${homeId}|${awayId}`);
+      }
       if (!matchId) continue;
       results[matchId] = {
         matchId,

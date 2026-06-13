@@ -79,11 +79,14 @@ Goal: compare all users' bets vs actual results + ranking.
 - [x] Unit tests (`leaderboard.test.ts`) — 6 new
 - [x] Playwright tests (`viewer.spec.ts`) — reveal/hide + leaderboard (3 tests)
 
-## Phase 6 — Knockout stage ⬜
+## Phase 6 — Knockout stage ✅
 Goal: bracket progression and knockout betting.
-- [ ] `Bracket` view R32 → R16 → QF → SF → 3rd → Final
-- [ ] Resolve placeholders as results come in
-- [ ] Knockout bets reuse the bet/lock/score flow
+- [x] `Bracket`/`KnockoutPage` (`/knockout`) view R32 → R16 → QF → SF → 3rd → Final
+- [x] Resolve placeholders as results come in (`domain/bracket.ts` + `BracketProvider`)
+- [x] Knockout bets reuse the bet/lock/score flow (generic `MatchCard`)
+- [x] Knockout results sync: `cup_finals.txt` mapped by official match number
+- [x] Unit tests (`bracket.test.ts` + parser/sync extensions) — 6 new
+- [x] Playwright tests (`knockout.spec.ts`) — 3 tests
 
 ## Phase 7 — Polish & hardening ⬜
 Goal: production-ready quality.
@@ -117,4 +120,13 @@ Goal: production-ready quality.
   after kickoff (privacy), alongside the actual result and per-bet points; ranked
   leaderboard (`domain/leaderboard.ts` → `Leaderboard`, sorted pts → exact → name).
   Viewer nav link added. Tests: 83 unit + 18 e2e all green; build + lint clean.
-  Awaiting approval to start Phase 6 (knockout stage).
+- 2026-06-12: Phase 6 complete. Knockout stage live: `KnockoutPage` (`/knockout`)
+  renders R32 → R16 → QF → SF → 3rd → Final, reusing `MatchCard` so betting, kickoff
+  locking and scoring work unchanged. `domain/bracket.ts` resolves placeholder refs to a
+  fixpoint — `1A`/`2A` from completed group standings, `W##`/`L##` from finished knockout
+  results (drawn/penalty scores stay unresolved); best-third `3X` refs are intentionally
+  left as placeholders (needs the official FIFA combination table). `BracketProvider`
+  memoizes resolution on results; `MatchCard`/`ViewerPage` show resolved teams via
+  `useBracket().getRefs`. Results sync now also pulls `cup_finals.txt`, mapping knockout
+  scores by official match number. Tests: 89 unit + 21 e2e all green; build + lint clean.
+  Awaiting approval to start Phase 7 (polish & hardening).

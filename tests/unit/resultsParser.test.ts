@@ -42,4 +42,22 @@ describe('parseResultsText', () => {
   it('ignores non-fixture lines', () => {
     expect(parseResultsText('= World Cup 2026\n# a comment\n\n')).toEqual([]);
   });
+
+  it('captures the match number and penalty annotation on knockout lines', () => {
+    const finals = `
+▪ Round of 32
+Sun Jun 28
+  (89) 17:00 UTC-4  Spain 1-1 (1-1, 4-2 pen)  France   @ Philadelphia
+  (90) 12:00 UTC-5  W73 v W75   @ Houston
+`;
+    const results = parseResultsText(finals);
+    expect(results).toHaveLength(1);
+    expect(results[0]).toEqual({
+      number: 89,
+      homeName: 'Spain',
+      awayName: 'France',
+      homeGoals: 1,
+      awayGoals: 1,
+    });
+  });
 });

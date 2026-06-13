@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { useUser } from './context/UserContext';
 import { GroupsPage } from './pages/GroupsPage';
 import { SchedulePage } from './pages/SchedulePage';
+import { KnockoutPage } from './pages/KnockoutPage';
 import { ViewerPage } from './pages/ViewerPage';
 import './App.css';
 
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<GroupsPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/knockout" element={<KnockoutPage />} />
           <Route path="/viewer" element={<ViewerPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

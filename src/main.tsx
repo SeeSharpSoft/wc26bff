@@ -5,14 +5,17 @@ import App from './App.tsx'
 import { UserProvider } from './context/UserProvider'
 import { BetsProvider } from './context/BetsProvider'
 import { ResultsProvider } from './context/ResultsProvider'
+import { BracketProvider } from './context/BracketProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <UserProvider>
       <ResultsProvider>
-        <BetsProvider>
-          <App />
-        </BetsProvider>
+        <BracketProvider>
+          <BetsProvider>
+            <App />
+          </BetsProvider>
+        </BracketProvider>
       </ResultsProvider>
     </UserProvider>
   </StrictMode>,

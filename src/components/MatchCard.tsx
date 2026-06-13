@@ -6,6 +6,7 @@ import { scoreBet } from '../utils/scoring';
 import { useNow } from '../hooks/useNow';
 import { useResults } from '../context/ResultsContext';
 import { useBets } from '../context/BetsContext';
+import { useBracket } from '../context/BracketContext';
 import { BetInput } from './BetInput';
 import './MatchCard.css';
 
@@ -29,6 +30,8 @@ export function MatchCard({ match }: { match: Match }) {
   const now = useNow();
   const { getResult } = useResults();
   const { getBet } = useBets();
+  const { getRefs } = useBracket();
+  const refs = getRefs(match.id);
   const started = isMatchStarted(match, now);
   const result = getResult(match.id);
   const finished = result?.status === 'finished';
@@ -46,7 +49,7 @@ export function MatchCard({ match }: { match: Match }) {
       </div>
 
       <div className="match-card-teams">
-        <Participant side="home" teamRef={match.home} />
+        <Participant side="home" teamRef={refs.home} />
         <span className="match-score" data-testid={`result-${match.id}`}>
           {result ? (
             <strong>
@@ -58,7 +61,7 @@ export function MatchCard({ match }: { match: Match }) {
             <span className="vs">v</span>
           )}
         </span>
-        <Participant side="away" teamRef={match.away} />
+        <Participant side="away" teamRef={refs.away} />
       </div>
 
       <BetInput match={match} />
