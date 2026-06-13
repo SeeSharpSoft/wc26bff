@@ -15,15 +15,21 @@ Status legend: ⬜ todo · 🟡 doing · ✅ done · ⏸ blocked
 - [x] Write `DEVELOPMENT.md`
 - [x] Write `TODO.md` (this file) with the full phase plan
 
-## Phase 1 — Tournament data layer ⬜
+## Phase 1 — Tournament data layer ✅
 Goal: model the WC2026 tournament as bundled, read-only static data.
-- [ ] Define domain types in `src/types.ts`
-- [ ] Retrieve 48 teams (name, ISO code, emoji flag) + group assignments (A–L)
-- [ ] Encode the 12 groups in `src/data/groups.ts`
-- [ ] Encode group-stage schedule (72 matches, kickoff datetimes) in `src/data/matches.ts`
-- [ ] Encode knockout bracket structure with placeholder team refs
-- [ ] Record data source + retrieval date in `src/data/index.ts`
-- [ ] Sanity check: 48 teams, 12×4 groups, match counts per stage
+- [x] Define domain types in `src/types.ts`
+- [x] Retrieve 48 teams (name, ISO code, emoji flag) + group assignments (A–L)
+- [x] Encode the 12 groups (generated into `src/data/generated.ts`)
+- [x] Encode group-stage schedule (72 matches, kickoff datetimes in ISO UTC)
+- [x] Encode knockout bracket (32 matches) with placeholder team refs
+- [x] Record data source + retrieval date in generator + `generated.ts`
+- [x] Sanity check: 48 teams, 12×4 groups, 72 + 32 matches (validated in generator)
+- [x] Data generator `scripts/build-data.mjs` from `src/data/source/*.txt`
+- [x] Public dataset API + helpers in `src/data/index.ts`
+- [x] Phase 1 data-overview UI (`App.tsx`) as a testable foundation
+- [x] **Testing setup:** Jest (unit) + Playwright (e2e)
+- [x] Unit tests for data integrity (`tests/unit/data.test.ts`, 20 tests)
+- [x] Playwright frontend test (`tests/e2e/overview.spec.ts`, 4 tests)
 
 ## Phase 2 — Storage & user management ⬜
 Goal: localStorage persistence and multi-user switching.
@@ -71,5 +77,9 @@ Goal: production-ready quality.
 ---
 
 ## Progress notes
-- 2026-06-12: Phase 0 complete. Project scaffolded, builds clean. Awaiting approval to
-  start Phase 1.
+- 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.
+- 2026-06-12: Phase 1 complete. Dataset generated from openfootball source (48 teams,
+  12 groups, 104 matches) with ISO-UTC kickoffs and knockout placeholders; helpers in
+  `src/data/index.ts`; data-overview UI in `App.tsx`. Testing wired up: Jest (20 unit
+  tests) + Playwright (4 e2e tests), all green; `npm run build` + `npm run lint` clean.
+  Each later phase adds its own unit + e2e tests. Awaiting approval to start Phase 2.

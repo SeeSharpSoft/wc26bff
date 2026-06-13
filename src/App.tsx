@@ -1,122 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { groups, matches, teams, getTeam, flagUrl } from './data';
+import type { Match } from './types';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+function formatKickoff(iso: string): string {
+  return new Date(iso).toLocaleString('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  });
 }
 
-export default App
+function ResultBadge({ match }: { match: Match }) {
+  if (!match.officialResult) return <span className="badge badge-scheduled">scheduled</span>;
+  const { homeGoals, awayGoals } = match.officialResult;
+  return (
+    <span className="badge badge-final">
+      {homeGoals}&ndash;{awayGoals}
+    </span>
+  );
+}
+
+function GroupCard({ groupId, teamIds }: { groupId: string; teamIds: string[] }) {
+  return (
+    <div className="group-card" data-testid={`group-${groupId}`}>
+      <h3>Group {groupId}</h3>
+      <ul>
+        {teamIds.map((id) => {
+          const team = getTeam(id)!;
+          return (
+            <li key={id}>
+              <img className="flag" src={flagUrl(team)} alt="" width={20} height={14} />
+              <span>{team.name}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function App() {
+  const finishedCount = matches.filter((m) => m.officialResult).length;
+  const upcoming = matches.filter((m) => !m.officialResult).slice(0, 6);
+
+  return (
+    <main className="app">
+      <header className="app-header">
+        <h1>World Cup 2026 — Friends Betting</h1>
+        <p className="tagline">Predict every match. Compete with your friends.</p>
+        <p className="stats" data-testid="stats">
+          <strong>{teams.length}</strong> teams ·{' '}
+          <strong>{groups.length}</strong> groups ·{' '}
+          <strong>{matches.length}</strong> matches ·{' '}
+          <strong>{finishedCount}</strong> played
+        </p>
+      </header>
+
+      <section aria-labelledby="groups-heading">
+        <h2 id="groups-heading">Groups</h2>
+        <div className="groups-grid" data-testid="groups-grid">
+          {groups.map((g) => (
+            <GroupCard key={g.id} groupId={g.id} teamIds={g.teamIds} />
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="upcoming-heading">
+        <h2 id="upcoming-heading">Next matches</h2>
+        <ul className="match-list" data-testid="upcoming-list">
+          {upcoming.map((m) => (
+            <li key={m.id} className="match-row">
+              <span className="match-round">{m.roundLabel}</span>
+              <span className="match-teams">
+                {m.home.kind === 'team' ? getTeam(m.home.teamId)!.name : m.home.label}
+                {' v '}
+                {m.away.kind === 'team' ? getTeam(m.away.teamId)!.name : m.away.label}
+              </span>
+              <span className="match-time">{formatKickoff(m.kickoff)} UTC</span>
+              <ResultBadge match={m} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <footer className="app-footer">
+        Phase 1 — tournament data layer. Betting &amp; user features coming next.
+      </footer>
+    </main>
+  );
+}
+
+export default App;

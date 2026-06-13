@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
+    "verbatimModuleSyntax": false,
+    "allowImportingTsExtensions": false,
+    "erasableSyntaxOnly": false,
+    "isolatedModules": true,
+    "types": ["jest", "node"],
+    "noEmit": false
+  },
+  "include": ["src", "tests/unit"]
+}
