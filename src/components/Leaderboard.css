@@ -1,0 +1,34 @@
+.leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border, #eee);
+}
+
+.leaderboard th {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.lb-rank {
+  width: 2rem;
+}
+
+.lb-name {
+  text-align: left;
+}
+
+.lb-points {
+  font-weight: 700;
+}
+
+.leaderboard-empty {
+  opacity: 0.7;
+}

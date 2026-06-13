@@ -69,12 +69,15 @@ Goal: pull official results from a trusted source on demand, store locally, and 
 - [x] Unit tests (scoring, standings, resultsParser, resultsSync with fake fetch) — 14 new
 - [x] Playwright test (`results.spec.ts`): mock the source request, sync, assert result + points
 
-## Phase 5 — Viewer mode & leaderboard ⬜
+## Phase 5 — Viewer mode & leaderboard ✅
 Goal: compare all users' bets vs actual results + ranking.
-- [ ] `ViewerPage`: per match, show each user's bet (only if match started) + actual result
-- [ ] Per-bet points display
-- [ ] `Leaderboard`: total points per user, ranked
-- [ ] Confirm locked bets are read-only everywhere
+- [x] `ViewerPage` (`/viewer`): per match, show each user's bet (only after kickoff) + actual result
+- [x] Per-bet points display in viewer
+- [x] `domain/leaderboard.ts` + `Leaderboard`: total points per user, ranked (pts → exact → name)
+- [x] Reveal rule enforced: bets hidden until kickoff (privacy), locked thereafter
+- [x] Viewer route + header nav link
+- [x] Unit tests (`leaderboard.test.ts`) — 6 new
+- [x] Playwright tests (`viewer.spec.ts`) — reveal/hide + leaderboard (3 tests)
 
 ## Phase 6 — Knockout stage ⬜
 Goal: bracket progression and knockout betting.
@@ -110,4 +113,8 @@ Goal: production-ready quality.
   (`utils/scoring.ts`) + group standings (`domain/standings.ts`, shown via
   `StandingsTable`); `MatchCard` shows the result and the active user's points. Tests:
   78 unit + 15 e2e all green; build + lint clean.
-  Awaiting approval to start Phase 5 (viewer mode & leaderboard).
+- 2026-06-12: Phase 5 complete. Viewer mode (`/viewer`) reveals every user's bet only
+  after kickoff (privacy), alongside the actual result and per-bet points; ranked
+  leaderboard (`domain/leaderboard.ts` → `Leaderboard`, sorted pts → exact → name).
+  Viewer nav link added. Tests: 83 unit + 18 e2e all green; build + lint clean.
+  Awaiting approval to start Phase 6 (knockout stage).

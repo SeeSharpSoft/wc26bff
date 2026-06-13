@@ -152,21 +152,21 @@ src/
     generated.ts     # AUTO-GENERATED teams/groups/matches — do not edit
     index.ts         # public API + helpers (getTeam, flagUrl, resolveTeamRef, …)
   storage/         # localStorage.ts (typed wrapper + keys + fallback); users.ts, bets.ts, results.ts
-  domain/          # pure logic: users.ts, bets.ts, standings.ts
+  domain/          # pure logic: users.ts, bets.ts, standings.ts, leaderboard.ts
   services/        # resultsParser.ts (pure text→scores), resultsSync.ts (fetch+map, on-demand)
   context/         # *Context.ts (context+hook) + *Provider.tsx pairs: User…, Bets…, Results…
-  components/      # Header, UserSwitcher, SyncButton, MatchCard, BetInput, StandingsTable
-  pages/           # GroupsPage, SchedulePage; KnockoutPage, ViewerPage (Phase 5+)
+  components/      # Header, UserSwitcher, SyncButton, MatchCard, BetInput, StandingsTable, Leaderboard
+  pages/           # GroupsPage, SchedulePage, ViewerPage; KnockoutPage (Phase 6)
   hooks/           # useNow.ts (interval-refreshed clock for live locking)
-  utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts; standings in domain/
+  utils/           # time.ts (local-tz formatting), locking.ts, scoring.ts
   types.ts         # domain model (single source of truth)
-  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule
+  App.tsx          # HashRouter + active-user bar; routes: / (Groups), /schedule, /viewer
   main.tsx         # <UserProvider><ResultsProvider><BetsProvider><App/></…></…></…>
 scripts/
   build-data.mjs   # source .txt -> src/data/generated.ts generator
 tests/
-  unit/            # Jest: data, users, storage, bets, locking, time, scoring, standings, resultsParser, resultsSync
-  e2e/             # Playwright: groups, betting, users, results
+  unit/            # Jest: data, users, storage, bets, locking, time, scoring, standings, leaderboard, resultsParser, resultsSync
+  e2e/             # Playwright: groups, betting, users, results, viewer
 ```
 
 Context split note: `UserContext.ts` (context object + `useUser` hook) is intentionally
@@ -234,13 +234,16 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/components/MatchCard.tsx` | One fixture: teams/flags, kickoff (local tz), result/LIVE, bet, points. |
 | `src/components/BetInput.tsx` | Score-guess inputs; read-only 🔒 once locked. |
 | `src/components/StandingsTable.tsx` | Group table computed from synced results. |
+| `src/components/Leaderboard.tsx` | Ranked total points per user. |
 | `src/components/SyncButton.tsx` | On-demand results sync trigger + status. |
 | `src/services/resultsParser.ts` | Pure parser: openfootball `cup.txt` text → scorelines. |
 | `src/services/resultsSync.ts` | Fetch trusted source + map scorelines to match ids. |
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
 | `src/domain/standings.ts` | Pure group-standings computation. |
+| `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
 | `src/pages/GroupsPage.tsx` | 12 group sections (standings + `MatchCard`s). |
 | `src/pages/SchedulePage.tsx` | Group matches grouped by local calendar day. |
+| `src/pages/ViewerPage.tsx` | Viewer mode: revealed bets + results + leaderboard. |
 | `src/hooks/useNow.ts` | Interval-refreshed clock so locking updates while the page is open. |
 | `src/utils/time.ts` | Date/time formatting in the browser's local timezone. |
 | `src/utils/locking.ts` | Bet lock / reveal rules (pure, time-injectable). |
@@ -328,4 +331,10 @@ Tournament data is **generated**, not hand-written:
 - **2026-06-12** (Phase 4) Sync = pure parser (`resultsParser.ts`) + a thin
   fetch/map service (`resultsSync.ts`, injectable `fetchImpl` for tests); Playwright
   mocks the source via `page.route` so e2e never touches the network.
+- **2026-06-12** (Phase 5) Viewer mode enforces the privacy rule with `isBetRevealed`
+  (= match started): before kickoff no user's bet is rendered at all; after kickoff every
+  user's bet, the result and per-bet points are shown. Leaderboard is a pure reduction
+  (`domain/leaderboard.ts`) over `allBets` × finished results, ranked by points → exact
+  hits → name. The viewer e2e seeds users/bets directly into `localStorage` to exercise
+  reveal of an already-started match.
 - **Open:** dev-time "now" override to test locking before/around real kickoff times.

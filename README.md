@@ -16,9 +16,9 @@ Built with **Vite + React 19 + TypeScript**. For architecture, data model, and
 conventions see [`DEVELOPMENT.md`](./DEVELOPMENT.md); for the roadmap see
 [`TODO.md`](./TODO.md).
 
-> **Status:** Phases 1–4 complete — tournament data, multi-user betting with kickoff
-> locking, and on-demand results sync with scoring & group standings. Viewer
-> mode/leaderboard and the knockout bracket are coming in later phases.
+> **Status:** Phases 1–5 complete — tournament data, multi-user betting with kickoff
+> locking, on-demand results sync with scoring & group standings, and viewer mode +
+> leaderboard (bets revealed only after kickoff). The knockout bracket is coming next.
 
 ---
 
