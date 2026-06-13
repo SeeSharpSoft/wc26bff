@@ -43,13 +43,18 @@ Goal: localStorage persistence and multi-user switching.
 - [x] Unit tests (`users.test.ts`, `storage.test.ts`) — 24 new tests
 - [x] Playwright tests (`users.spec.ts`) — add/switch/persist/remove (5 tests)
 
-## Phase 3 — Group stage UI & betting ⬜
+## Phase 3 — Group stage UI & betting ✅
 Goal: browse groups/schedule and place lockable bets for the active user.
-- [ ] `GroupsPage`: 12 group tables (teams + flags)
-- [ ] `SchedulePage`: matches grouped by matchday/date
-- [ ] `MatchCard` + `BetInput`: enter/edit score guess for active user
-- [ ] Locking: disable editing once `now >= kickoff`
-- [ ] Only show the active user's own bets here
+- [x] `GroupsPage`: 12 group sections (teams + flags) with a `MatchCard` per fixture
+- [x] `SchedulePage`: group matches grouped by local calendar day
+- [x] `MatchCard` + `BetInput`: enter/edit score guess for active user
+- [x] Locking: read-only `🔒` bet once `now >= kickoff` (`src/utils/locking.ts`)
+- [x] Only show the active user's own bets here (bets scoped via `BetsProvider`)
+- [x] HashRouter routing + nav links (Groups / Schedule) in `Header`
+- [x] `useNow` hook so locking updates live without impure render reads
+- [x] Unit tests (`bets.test.ts`, `locking.test.ts`) — 20 new tests
+- [x] Playwright tests (`groups.spec.ts`, `betting.spec.ts`) — 7 tests
+      (uses `page.clock` for deterministic kickoff locking)
 
 ## Phase 4 — Results entry & scoring ⬜
 Goal: record actual results and compute points.
@@ -87,4 +92,9 @@ Goal: production-ready quality.
   schema-version stub; pure user domain logic; `UserProvider`/`useUser` context; Header
   with `UserSwitcher` (add/switch/remove + active banner); users and active selection
   persist across reloads. Tests: 44 unit + 9 e2e all green; build + lint clean.
-  Awaiting approval to start Phase 3 (group stage UI & betting).
+- 2026-06-12: Phase 3 complete. HashRouter with Groups/Schedule pages + header nav;
+  pure bet logic (`domain/bets.ts`) + locking rules (`utils/locking.ts`); `BetsProvider`
+  scopes bets to the active user and persists `wc26.bets`; `MatchCard`/`BetInput` enter
+  & lock score guesses (read-only 🔒 after kickoff); `useNow` hook keeps locking live
+  without impure render reads. Tests: 64 unit + 12 e2e all green; build + lint clean.
+  Awaiting approval to start Phase 4 (results entry & scoring).

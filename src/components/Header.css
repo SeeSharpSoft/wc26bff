@@ -27,3 +27,23 @@
 .brand-mark {
   font-size: 1.3rem;
 }
+
+.site-nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-right: auto;
+  margin-left: 1rem;
+}
+
+.site-nav a {
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text, #333);
+  font-weight: 500;
+}
+
+.site-nav a.active {
+  background: var(--accent-bg, #eee);
+  color: var(--accent, #aa3bff);
+}

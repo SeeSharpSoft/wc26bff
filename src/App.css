@@ -1,122 +1,60 @@
 .app {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1rem 1rem 3rem;
 }
 
-.app-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.app-header h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.8rem;
-}
-
-.tagline {
-  margin: 0 0 0.75rem;
-  opacity: 0.7;
-}
-
-.stats strong {
-  color: var(--accent, #aa3bff);
+.active-user-bar {
+  background: var(--accent-bg, #f2eafe);
+  border-bottom: 1px solid var(--border, #eee);
 }
 
 .active-user-banner {
-  display: inline-block;
-  margin: 0 0 0.5rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  background: var(--accent-bg, #eee);
+  display: block;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.4rem 1rem;
   font-size: 0.9rem;
 }
 
-h2 {
+.page h1 {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.page-intro {
+  margin: 0 0 1.5rem;
+  opacity: 0.75;
+}
+
+.group-section,
+.day-section {
+  margin-bottom: 2rem;
+}
+
+.group-section h2,
+.day-heading {
   border-bottom: 1px solid var(--border, #ddd);
   padding-bottom: 0.3rem;
 }
 
-.groups-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.group-card {
-  border: 1px solid var(--border, #ddd);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-}
-
-.group-card h3 {
-  margin: 0 0 0.5rem;
-}
-
-.group-card ul {
+.group-teams {
   list-style: none;
-  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
   padding: 0;
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
 }
 
-.group-card li {
+.group-teams li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.15rem 0;
+  gap: 0.4rem;
 }
 
-.flag {
-  border-radius: 2px;
-  object-fit: cover;
-}
-
-.match-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.match-row {
+.match-grid {
   display: grid;
-  grid-template-columns: 7rem 1fr auto auto;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border, #eee);
-}
-
-.match-round {
-  font-size: 0.8rem;
-  opacity: 0.7;
-}
-
-.match-time {
-  font-size: 0.85rem;
-  opacity: 0.8;
-}
-
-.badge {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.badge-scheduled {
-  background: var(--accent-bg, #eee);
-  color: var(--accent, #888);
-}
-
-.badge-final {
-  background: #1f9d551a;
-  color: #1f9d55;
-  font-weight: 700;
-}
-
-.app-footer {
-  margin-top: 2.5rem;
-  text-align: center;
-  font-size: 0.85rem;
-  opacity: 0.6;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.9rem;
 }
