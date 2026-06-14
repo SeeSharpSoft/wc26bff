@@ -50,9 +50,16 @@ export function ViewerMatch({ match }: { match: Match }) {
           <TeamName teamRef={refs.home} />
           <span className="viewer-score" data-testid={`viewer-result-${match.id}`}>
             {result ? (
-              <strong>
-                {result.homeGoals}–{result.awayGoals}
-              </strong>
+              <>
+                <strong>
+                  {result.homeGoals}–{result.awayGoals}
+                </strong>
+                {result.status === 'live' && (
+                  <span className="badge badge-live" data-testid={`viewer-live-${match.id}`}>
+                    LIVE
+                  </span>
+                )}
+              </>
             ) : started ? (
               <span className="badge badge-live">LIVE</span>
             ) : (

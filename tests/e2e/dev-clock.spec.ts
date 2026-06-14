@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { addUser } from './helpers';
 
 // FIXED sits before m072 (Jun 28) so it is open for betting; the dev clock

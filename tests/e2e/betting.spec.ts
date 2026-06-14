@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { addUser, switchUser } from './helpers';
 
 // A fixed clock so locking is deterministic: 2026-06-15 sits after the opener
@@ -16,8 +16,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Phase 3 — betting & locking', () => {
-  test('an open match prompts to add a user before betting', async ({ page }) => {
-    await expect(page.getByTestId('bet-hint-m072')).toBeVisible();
+  test('starts in viewer mode and reveals bet inputs once a user is active', async ({
+    page,
+  }) => {
+    // Default landing is viewer mode: read-only matches, no bet inputs yet.
+    await expect(page.getByTestId('active-user-banner')).toContainText('Viewer mode');
+    await expect(page.getByTestId('bet-home-m072')).toHaveCount(0);
+
+    // Adding a user exits viewer mode and shows the betting inputs.
+    await addUser(page, 'Alice');
+    await expect(page.getByTestId('bet-home-m072')).toBeVisible();
   });
 
   test('places a bet on an open match and persists it across reload', async ({
@@ -30,6 +38,8 @@ test.describe('Phase 3 — betting & locking', () => {
 
     await page.reload();
 
+    // A reload starts in viewer mode again; switch back to Alice to bet.
+    await switchUser(page, 'Alice');
     await expect(page.getByTestId('bet-home-m072')).toHaveValue('2');
     await expect(page.getByTestId('bet-away-m072')).toHaveValue('1');
   });

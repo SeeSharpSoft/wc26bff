@@ -255,8 +255,10 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/components/BetInput.tsx` | Score-guess inputs; read-only 🔒 once locked. |
 | `src/components/StandingsTable.tsx` | Group table computed from synced results. |
 | `src/components/Leaderboard.tsx` | Ranked total points per user. |
-| `src/services/resultsParser.ts` | Pure parser: openfootball `cup.txt` text → scorelines. |
-| `src/services/resultsSync.ts` | Fetch trusted source + map scorelines to match ids. |
+| `src/services/resultsParser.ts` | Pure parser: openfootball `cup.txt`/`cup_finals.txt` text → scorelines (always `finished`). |
+| `src/services/thesportsdbParser.ts` | Pure parser: TheSportsDB JSON events → scorelines tagged `finished`/`live` (live in-play scores). |
+| `src/services/resultsSync.ts` | Fetch the typed sources (openfootball + TheSportsDB) and merge scorelines onto match ids by status rank. |
+| `src/components/AutoResultsSync.tsx` | Auto-syncs results on entering viewer mode + every 60s while it's active (live updates). |
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
 | `src/domain/standings.ts` | Pure group-standings computation. |
 | `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
@@ -449,3 +451,33 @@ Tournament data is **generated**, not hand-written:
   pure domain (`makeUser`/`renameUser` slice to `MAX_USER_NAME_LENGTH = 10` in
   `domain/users.ts`) and on the add-user input (`maxLength`). Keep this cap in mind for any
   new name entry points.
+
+- **2026-06-13** (UX/Data) **Default to viewer mode + live scores from a second source.**
+  Three related changes:
+  1. **App starts in viewer mode.** `ViewerModeProvider` now initialises `viewerMode = true`
+     (still in-memory, not persisted), so a fresh load — or any reload — lands on the shared,
+     read-only viewer overview. The only way out is to select/add a user (which activates that
+     user and exits viewer mode). Note for tests: after any `page.reload()` the app is in viewer
+     mode again, so specs must re-select a user before touching bet inputs.
+  2. **Second results source for live scores.** `resultsSync.ts` now fetches an array of typed
+     sources (`{ kind: 'openfootball' | 'thesportsdb', url }`; a bare string still means
+     openfootball for back-compat). Added **TheSportsDB** free JSON feed (public test key `3`,
+     FIFA World Cup league `4429`, season `2026`:
+     `https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026`). It is
+     CORS-enabled and key-free, and — unlike openfootball's static text — surfaces **live
+     in-play scores** (status codes like `1H`/`2H`/`HT`) as well as finished results, so it
+     covers both "current game" and "all results". openfootball remains for authoritative
+     finished group + knockout results (knockout still mapped by official `(NN)` number).
+     New pure parser `services/thesportsdbParser.ts` (`parseTheSportsDbEvents`) tags each
+     scoreline `finished` or `live`. Source results are merged by a status rank
+     (`finished > live > scheduled`) so a live/stale score never overwrites a finished one, and
+     per-source fetch failures are tolerated (sync only throws if **every** source fails) so a
+     flaky live feed can't wipe out finished results. Team names are matched via a normalised
+     key (lowercased, accents stripped, non-alphanumerics removed) so e.g. our
+     "Bosnia & Herzegovina" matches TheSportsDB's "Bosnia-Herzegovina".
+  3. **Auto-sync in viewer mode.** New `components/AutoResultsSync.tsx` syncs once on entering
+     viewer mode and then every `AUTO_SYNC_INTERVAL_MS` (60s) while it stays active — so a
+     shared viewing screen picks up live scores without anyone clicking Sync. The manual Sync
+     button (in the user menu) still works in every mode. `MatchCard`/`ViewerMatch` now render
+     the current score **with** a `LIVE` badge when a result's status is `live` (previously a
+     started-but-unfinished match showed only `LIVE` with no score).

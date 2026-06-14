@@ -26,6 +26,7 @@ describe('parseResultsText', () => {
       awayName: 'South Africa',
       homeGoals: 2,
       awayGoals: 0,
+      status: 'finished',
     });
   });
 
@@ -36,6 +37,7 @@ describe('parseResultsText', () => {
       awayName: 'Czech Republic',
       homeGoals: 2,
       awayGoals: 1,
+      status: 'finished',
     });
   });
 
@@ -58,6 +60,7 @@ Sun Jun 28
       awayName: 'France',
       homeGoals: 1,
       awayGoals: 1,
+      status: 'finished',
     });
   });
 });

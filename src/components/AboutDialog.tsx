@@ -65,8 +65,9 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
         </p>
         <p className="about-note">
           Everything is stored <strong>in your browser</strong> — there is no account and no
-          server. To bring in the actual match results, use <strong>Sync results</strong> in
-          the menu; that is the only action that needs an internet connection.
+          server. To bring in the actual match results (including live scores while a game is
+          on), use <strong>Sync results</strong> in the menu; viewer mode also refreshes them
+          automatically. That is the only action that needs an internet connection.
         </p>
 
         <a

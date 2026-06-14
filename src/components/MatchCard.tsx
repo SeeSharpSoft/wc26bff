@@ -52,9 +52,16 @@ export function MatchCard({ match }: { match: Match }) {
         <Participant side="home" teamRef={refs.home} />
         <span className="match-score" data-testid={`result-${match.id}`}>
           {result ? (
-            <strong>
-              {result.homeGoals}–{result.awayGoals}
-            </strong>
+            <>
+              <strong>
+                {result.homeGoals}–{result.awayGoals}
+              </strong>
+              {result.status === 'live' && (
+                <span className="badge badge-live" data-testid={`live-${match.id}`}>
+                  LIVE
+                </span>
+              )}
+            </>
           ) : started ? (
             <span className="badge badge-live">LIVE</span>
           ) : (

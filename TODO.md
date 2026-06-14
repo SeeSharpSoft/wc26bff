@@ -109,10 +109,21 @@ main pages (not a separate route). Guesses still revealed only at kickoff and lo
 - [x] Remove `/viewer` route, `Viewer` nav link, and `ViewerPage`; viewer-aware active bar
 - [x] Update e2e helpers (`enterViewerMode`/`exitViewerMode`) + rewrite `viewer.spec.ts`
 
-## Goal — Align viewer & betting UI 🟡
+## Goal — Align viewer & betting UI ✅
 Goal: make the viewer and betting views share the same structure/navigation.
 - [x] Move the leaderboard to its own **Points** tab (`/points`); drop it from the Groups viewer
 - [x] All three pages share identical scaffolding in both modes; only the matches container swaps (`MatchCard` grid ↔ `ViewerMatch` stack). Betting view is the leading UI.
+
+## Goal — Default viewer mode + live scores ✅
+Goal: land on viewer mode, add a live-capable score source, and auto-sync while viewing.
+- [x] App **starts in viewer mode** (`ViewerModeProvider` initial `true`, still in-memory)
+- [x] Add **TheSportsDB** free JSON source (league 4429, season 2026) for live + all results;
+      typed multi-source `resultsSync` merged by status rank (`finished > live > scheduled`),
+      per-source failures tolerated; name matching via normalised keys
+- [x] New pure parser `thesportsdbParser.ts` tags scorelines `finished`/`live`
+- [x] `MatchCard`/`ViewerMatch` show the current score **with** a `LIVE` badge for in-play matches
+- [x] `AutoResultsSync` auto-syncs on entering viewer mode + every 60s while active (manual Sync still works in every mode)
+- [x] Tests updated for default-viewer-mode flow; shared e2e network stub fixture. 110 unit + 28 e2e green; build + lint clean.
 
 ## Progress notes
 - 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.

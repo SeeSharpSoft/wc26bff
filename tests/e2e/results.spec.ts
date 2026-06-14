@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { addUser, openUserMenu, syncResults } from './helpers';
 
 const FIXED = new Date('2026-06-15T12:00:00Z');
@@ -23,11 +23,41 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Phase 4 — results sync & scoring', () => {
-  test('shows seeded results before any sync', async ({ page }) => {
+  test('auto-syncs in viewer mode and shows seeded results', async ({ page }) => {
     // The opener (m001) ships as a finished result in the bundled dataset.
-    await expect(page.getByTestId('result-m001')).toContainText('2');
+    await expect(page.getByTestId('viewer-result-m001')).toContainText('2');
+    // The app starts in viewer mode, which auto-syncs on load.
     await openUserMenu(page);
-    await expect(page.getByTestId('sync-status')).toContainText('Not synced yet');
+    await expect(page.getByTestId('sync-status')).toContainText('Synced');
+  });
+
+  test('shows a live score with a LIVE badge for an in-progress match', async ({
+    page,
+  }) => {
+    // m006 (Brazil v Morocco) has kicked off by the fixed clock but has no
+    // finished result; feed a live in-play score from the TheSportsDB source.
+    await page.route('**thesportsdb.com/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          events: [
+            {
+              strHomeTeam: 'Brazil',
+              strAwayTeam: 'Morocco',
+              intHomeScore: '1',
+              intAwayScore: '0',
+              strStatus: '2H',
+            },
+          ],
+        }),
+      }),
+    );
+    await syncResults(page);
+
+    // Viewer mode (default) shows the running score plus a LIVE hint.
+    await expect(page.getByTestId('viewer-result-m006')).toContainText('1–0');
+    await expect(page.getByTestId('viewer-live-m006')).toBeVisible();
   });
 
   test('syncing pulls a result and scores the active user’s bet', async ({ page }) => {

@@ -3,6 +3,8 @@
 // appear in the source); mapping names to team ids happens in the sync service
 // so this stays a pure, easily testable string transform.
 
+import type { MatchStatus } from '../types';
+
 export interface ParsedResult {
   /** Official match number when the source line carries one (e.g. knockout "(89)"). */
   number?: number;
@@ -10,6 +12,8 @@ export interface ParsedResult {
   awayName: string;
   homeGoals: number;
   awayGoals: number;
+  /** Match state for this scoreline. Omitted by sources that only report finished games. */
+  status?: MatchStatus;
 }
 
 // A fixture line looks like:
@@ -35,6 +39,7 @@ export function parseResultsText(text: string): ParsedResult[] {
       homeGoals: Number(scored[2]),
       awayGoals: Number(scored[3]),
       awayName: scored[4].trim(),
+      status: 'finished',
     };
     if (lineMatch[1]) parsed.number = Number(lineMatch[1]);
     out.push(parsed);

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { addUser, deleteUser, openUserMenu, switchUser } from './helpers';
 
 // Each test starts from a clean localStorage so users don't leak between cases.
@@ -9,10 +9,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Phase 2 — user management', () => {
-  test('starts with no users', async ({ page }) => {
-    // The trigger shows the empty state directly, without opening the menu.
-    await expect(page.getByTestId('no-users')).toBeVisible();
-    await expect(page.getByTestId('active-user-banner')).toContainText('No active user');
+  test('starts in viewer mode with no users', async ({ page }) => {
+    // The app defaults to viewer mode; the trigger shows it directly.
+    await expect(page.getByTestId('viewer-active')).toBeVisible();
+    await expect(page.getByTestId('active-user-banner')).toContainText('Viewer mode');
+
+    // The user list is empty until one is added.
+    await openUserMenu(page);
+    await expect(page.getByTestId('user-menu-empty')).toBeVisible();
   });
 
   test('adding a user makes them active', async ({ page }) => {
@@ -51,6 +55,9 @@ test.describe('Phase 2 — user management', () => {
 
     await page.reload();
 
+    // A reload starts in viewer mode; the stored users persist, so switching
+    // back to Alice proves the selection survived.
+    await switchUser(page, 'Alice');
     await expect(page.getByTestId('active-user')).toHaveText('Alice');
     await openUserMenu(page);
     await expect(

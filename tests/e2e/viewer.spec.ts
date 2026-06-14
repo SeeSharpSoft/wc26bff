@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { enterViewerMode } from './helpers';
 
 const FIXED = new Date('2026-06-15T12:00:00Z');

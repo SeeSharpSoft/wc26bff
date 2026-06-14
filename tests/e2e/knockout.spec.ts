@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './fixtures';
+import { switchUser } from './helpers';
 
 const FIXED = new Date('2026-06-15T12:00:00Z');
 
@@ -15,6 +16,8 @@ test.beforeEach(async ({ page }) => {
   }, USER);
   await page.reload();
   await page.getByTestId('site-nav').waitFor();
+  // The app starts in viewer mode; switch to the user to access bet inputs.
+  await switchUser(page, USER.name);
   await page.getByTestId('site-nav').getByRole('link', { name: 'Knockout' }).click();
   await expect(page.getByTestId('knockout-page')).toBeVisible();
 });
@@ -42,6 +45,8 @@ test.describe('Phase 6 — knockout stage', () => {
     await away.fill('1');
     await page.reload();
     await page.getByTestId('site-nav').waitFor();
+    // A reload starts in viewer mode again; switch back to the user.
+    await switchUser(page, USER.name);
     await page.getByTestId('site-nav').getByRole('link', { name: 'Knockout' }).click();
     await expect(page.getByTestId('bet-home-m073')).toHaveValue('2');
     await expect(page.getByTestId('bet-away-m073')).toHaveValue('1');

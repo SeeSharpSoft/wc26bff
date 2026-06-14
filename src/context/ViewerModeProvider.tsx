@@ -4,8 +4,9 @@ import { ViewerModeContext, type ViewerModeContextValue } from './ViewerModeCont
 
 export function ViewerModeProvider({ children }: { children: ReactNode }) {
   // Viewer mode is a transient, non-user-specific view toggle. It is intentionally
-  // not persisted: each session starts in personal betting mode.
-  const [viewerMode, setViewerMode] = useState(false);
+  // not persisted, but each session *starts* in viewer mode so a fresh visitor (or
+  // a shared screen) immediately sees everyone's guesses and live results.
+  const [viewerMode, setViewerMode] = useState(true);
 
   const toggleViewerMode = useCallback(() => setViewerMode((v) => !v), []);
 

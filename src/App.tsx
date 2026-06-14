@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Header } from './components/Header';
+import { AutoResultsSync } from './components/AutoResultsSync';
 import { useUser } from './context/UserContext';
 import { useViewerMode } from './context/ViewerModeContext';
 import { GroupsPage } from './pages/GroupsPage';
@@ -36,6 +37,7 @@ function ActiveUserBar() {
 function App() {
   return (
     <HashRouter>
+      <AutoResultsSync />
       <Header />
       <ActiveUserBar />
       <main className="app">

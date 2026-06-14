@@ -4,15 +4,18 @@
 
 A browser-only web app where a group of friends predict the outcomes of the
 **FIFA World Cup 2026** matches. Pick a scoreline for every game, lock in your bets
-before kickoff, switch between users, and flip on **viewer mode** (a toggle in the user
-menu) to compare everyone's guesses against the real results.
+before kickoff, switch between users, and use **viewer mode** (the default landing,
+toggled from the user menu) to compare everyone's guesses against the real results.
 
 - **No backend** — all user data is stored in the browser (`localStorage`).
 - Scoring: exact score = **3 points**, correct tendency (win/draw/loss) = **1 point**,
   otherwise **0**.
-- **Official results** are pulled on demand (the **Sync results** button) from a trusted
-  public source ([openfootball](https://github.com/openfootball/worldcup)) and cached
-  locally; this is the only feature that needs internet access.
+- **Results** are pulled from trusted public, key-free sources — finished scores from
+  [openfootball](https://github.com/openfootball/worldcup) and **live in-play scores**
+  from [TheSportsDB](https://www.thesportsdb.com) — and cached locally. Use the **Sync
+  results** button any time; in viewer mode results also refresh automatically (about
+  once a minute) so a shared screen stays live. This is the only feature that needs
+  internet access.
 
 Built with **Vite + React 19 + TypeScript**. For architecture, data model, and
 conventions see [`DEVELOPMENT.md`](./DEVELOPMENT.md); for the roadmap see
