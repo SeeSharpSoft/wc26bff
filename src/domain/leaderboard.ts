@@ -12,6 +12,8 @@ export interface LeaderboardRow {
   points: number;
   /** Number of exact-score (3-point) hits. */
   exact: number;
+  /** Number of correct goal-difference (2-point) hits. */
+  diff: number;
   /** Number of correct-tendency (1-point) hits. */
   tendency: number;
   /** Finished matches the user placed a bet on. */
@@ -34,6 +36,7 @@ export function computeLeaderboard(
     const bets = getUserBets(allBets, user.id);
     let points = 0;
     let exact = 0;
+    let diff = 0;
     let tendency = 0;
     let played = 0;
 
@@ -44,16 +47,18 @@ export function computeLeaderboard(
       const p = scoreBet(bet, result);
       points += p;
       if (p === 3) exact += 1;
+      else if (p === 2) diff += 1;
       else if (p === 1) tendency += 1;
     }
 
-    return { userId: user.id, name: user.name, points, exact, tendency, played };
+    return { userId: user.id, name: user.name, points, exact, diff, tendency, played };
   });
 
   return rows.sort(
     (a, b) =>
       b.points - a.points ||
       b.exact - a.exact ||
+      b.diff - a.diff ||
       a.name.localeCompare(b.name),
   );
 }

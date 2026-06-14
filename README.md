@@ -8,8 +8,8 @@ before kickoff, switch between users, and use **viewer mode** (the default landi
 toggled from the user menu) to compare everyone's guesses against the real results.
 
 - **No backend** — all user data is stored in the browser (`localStorage`).
-- Scoring: exact score = **3 points**, correct tendency (win/draw/loss) = **1 point**,
-  otherwise **0**.
+- Scoring: exact score = **3 points**, correct (non-draw) goal difference = **2 points**,
+  correct tendency (win/draw/loss) = **1 point**, otherwise **0**.
 - **Results** are pulled from trusted public, key-free sources — finished scores from
   [openfootball](https://github.com/openfootball/worldcup) and **live in-play scores**
   from [TheSportsDB](https://www.thesportsdb.com) — and cached locally. Use the **Sync

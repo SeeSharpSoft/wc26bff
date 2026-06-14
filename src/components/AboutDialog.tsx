@@ -60,7 +60,8 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
           Several friends can share the same browser: switch between users, and everyone
           keeps their own private guesses. In <strong>viewer mode</strong> you can compare
           everyone's bets against the real results once a match has started. A correct exact
-          score is worth <strong>3 points</strong>, the right tendency (win / draw / loss) is
+          score is worth <strong>3 points</strong>, the correct goal difference (for a non-draw)
+          is worth <strong>2 points</strong>, and the right tendency (win / draw / loss) is
           worth <strong>1 point</strong>.
         </p>
         <p className="about-note">

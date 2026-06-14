@@ -26,8 +26,8 @@ Core requirements:
     menu), not a separate route. While active it overlays the three main pages: Groups
     becomes a viewer overview (leaderboard + group guesses), Schedule shows guesses by
     date, and Knockout shows guesses per round — all read-only.
-- **Scoring**: exact score = **3 points**, correct tendency (home win / draw / away win)
-  = **1 point**, otherwise **0 points**.
+- **Scoring**: exact score = **3 points**, correct (non-draw) goal difference = **2 points**,
+  correct tendency (home win / draw / away win) = **1 point**, otherwise **0 points**.
 - **All data is stored in the browser** (localStorage). No backend, no network calls
   for user data.
 
@@ -112,9 +112,14 @@ interface Result {
 
 ### Scoring rules (`src/utils/scoring.ts`)
 For a finished match with actual `(aH, aA)` and a bet `(bH, bA)`:
-- `bH === aH && bA === aA` → **3**
-- `sign(bH - bA) === sign(aH - aA)` → **1**
+- `bH === aH && bA === aA` → **3** (exact score)
+- `(bH - bA) === (aH - aA) && (aH - aA) !== 0` → **2** (correct, non-draw goal difference)
+- `sign(bH - bA) === sign(aH - aA)` → **1** (correct tendency)
 - else → **0**
+
+A draw guess never earns the 2-point tier: the goal difference would be `0`, which is
+excluded, so a non-exact draw scores **1** (correct tendency). Example: actual `0:1`, guess
+`1:2` → both "away by 1" → **2**; guess `0:2` → away win but wrong margin → **1**.
 
 ### Locking rules (`src/utils/locking.ts`)
 A bet is editable iff `now() < match.kickoff` **and** result status is `scheduled`.
@@ -261,7 +266,7 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/components/AutoResultsSync.tsx` | Auto-syncs results on entering viewer mode + every 60s while it's active (live updates). |
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
 | `src/domain/standings.ts` | Pure group-standings computation. |
-| `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
+| `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/diff/tendency per user, ranked). |
 | `src/pages/PointsPage.tsx` | Points tab (`/points`): the ranked `Leaderboard` (mode-agnostic). |
 | `src/pages/GroupsPage.tsx` | 12 group sections (heading + `StandingsTable` + matches). Same structure in both modes; renders `MatchCard`s (betting) or `ViewerMatch`es (viewer). |
 | `src/pages/SchedulePage.tsx` | Group matches grouped by local calendar day. Same structure in both modes; renders `MatchCard`s (betting) or `ViewerMatch`es (viewer). |
@@ -274,7 +279,7 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/hooks/useNow.ts` | Interval-refreshed clock so locking updates while the page is open. |
 | `src/utils/time.ts` | Date/time formatting in the browser's local timezone. |
 | `src/utils/locking.ts` | Bet lock / reveal rules (pure, time-injectable). |
-| `src/utils/scoring.ts` | Points calculation (exact=3, tendency=1, else=0). |
+| `src/utils/scoring.ts` | Points calculation (exact=3, correct goal difference=2, tendency=1, else=0). |
 | `src/utils/devClock.ts` | Dev-only "now" override (`getDevNow`/`setDevNow`/`resolveNow`); `useNow` honours it. |
 | `src/components/DevClock.tsx` | Dev-only Header control to set/clear the clock override (gated on `import.meta.env.DEV`). |
 | `src/storage/validation.ts` | Runtime sanitisers for persisted users/bets/results (drop corrupt records). |
@@ -481,3 +486,11 @@ Tournament data is **generated**, not hand-written:
      button (in the user menu) still works in every mode. `MatchCard`/`ViewerMatch` now render
      the current score **with** a `LIVE` badge when a result's status is `live` (previously a
      started-but-unfinished match showed only `LIVE` with no score).
+
+- **2026-06-13** (Rule) **Scoring gains a 2-point goal-difference tier.** Between exact (3) and
+  tendency (1): a bet that isn't exact but has the **same signed goal difference** as the result
+  earns **2 points** (e.g. actual `0:1`, guess `1:2`). Draws are excluded — a difference of `0`
+  never triggers the 2-point tier, so a non-exact draw still scores 1 (correct tendency).
+  `scoreBet` returns `0 | 1 | 2 | 3` (`utils/scoring.ts`); the leaderboard
+  (`domain/leaderboard.ts`) now tracks a `diff` bucket alongside `exact`/`tendency`, shows a
+  **Diff** column, and breaks point ties by points → exact → diff → name.

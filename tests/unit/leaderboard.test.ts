@@ -29,12 +29,25 @@ const RESULTS: Record<string, Result> = {
 };
 
 describe('computeleaderboard', () => {
-  it('totals points and counts exact/tendency hits', () => {
+  it('totals points and counts exact/diff/tendency hits', () => {
     const rows = computeLeaderboard(USERS, BETS, RESULTS);
     const alice = rows.find((r) => r.userId === 'u1')!;
-    expect(alice).toMatchObject({ points: 4, exact: 1, tendency: 1, played: 2 });
+    expect(alice).toMatchObject({ points: 4, exact: 1, diff: 0, tendency: 1, played: 2 });
     const bob = rows.find((r) => r.userId === 'u2')!;
-    expect(bob).toMatchObject({ points: 0, exact: 0, tendency: 0, played: 1 });
+    expect(bob).toMatchObject({ points: 0, exact: 0, diff: 0, tendency: 0, played: 1 });
+  });
+
+  it('counts a correct goal difference as a 2-point diff hit', () => {
+    const users = [user('u1', 'Alice')];
+    const bets: BetsByUser = {
+      u1: {
+        // actual 0:1, guess 1:2 — same margin → 2 points.
+        m001: { userId: 'u1', matchId: 'm001', homeGoals: 1, awayGoals: 2, updatedAt: 'x' },
+      },
+    };
+    const results: Record<string, Result> = { m001: finished('m001', 0, 1) };
+    const [alice] = computeLeaderboard(users, bets, results);
+    expect(alice).toMatchObject({ points: 2, exact: 0, diff: 1, tendency: 0, played: 1 });
   });
 
   it('ranks by points then exact hits then name', () => {
