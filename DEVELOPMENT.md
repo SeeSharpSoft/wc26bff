@@ -258,7 +258,7 @@ Group stage = 72 matches, then Round of 32 → R16 → QF → SF → 3rd place �
 | `src/services/resultsParser.ts` | Pure parser: openfootball `cup.txt`/`cup_finals.txt` text → scorelines (always `finished`). |
 | `src/services/thesportsdbParser.ts` | Pure parser: TheSportsDB JSON events → scorelines tagged `finished`/`live` (live in-play scores). |
 | `src/services/resultsSync.ts` | Fetch the typed sources (openfootball + TheSportsDB) and merge scorelines onto match ids by status rank. |
-| `src/components/AutoResultsSync.tsx` | Auto-syncs results on entering viewer mode + every 60s while it's active (live updates). |
+| `src/components/AutoResultsSync.tsx` | Syncs results once on entering viewer mode (launch + switching back); no polling. |
 | `src/context/ResultsProvider.tsx` | Results map + sync state; `useResults` in `ResultsContext.ts`. |
 | `src/domain/standings.ts` | Pure group-standings computation. |
 | `src/domain/leaderboard.ts` | Pure leaderboard (points/exact/tendency per user, ranked). |
@@ -475,9 +475,11 @@ Tournament data is **generated**, not hand-written:
      flaky live feed can't wipe out finished results. Team names are matched via a normalised
      key (lowercased, accents stripped, non-alphanumerics removed) so e.g. our
      "Bosnia & Herzegovina" matches TheSportsDB's "Bosnia-Herzegovina".
-  3. **Auto-sync in viewer mode.** New `components/AutoResultsSync.tsx` syncs once on entering
-     viewer mode and then every `AUTO_SYNC_INTERVAL_MS` (60s) while it stays active — so a
-     shared viewing screen picks up live scores without anyone clicking Sync. The manual Sync
-     button (in the user menu) still works in every mode. `MatchCard`/`ViewerMatch` now render
-     the current score **with** a `LIVE` badge when a result's status is `live` (previously a
-     started-but-unfinished match showed only `LIVE` with no score).
+  3. **Auto-sync on entering viewer mode.** New `components/AutoResultsSync.tsx` syncs once
+     whenever viewer mode is *entered* — at launch (viewer mode is the default) and whenever
+     the user switches back to it from their own input. It intentionally does **not** poll on
+     a timer (an earlier 60s interval was removed because it produced steady background
+     requests); further refreshes come from the manual Sync button in the user menu, which
+     works in every mode. `MatchCard`/`ViewerMatch` now render the current score **with** a
+     `LIVE` badge when a result's status is `live` (previously a started-but-unfinished match
+     showed only `LIVE` with no score).

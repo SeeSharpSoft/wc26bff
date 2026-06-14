@@ -2,13 +2,11 @@ import { useEffect } from 'react';
 import { useResults } from '../context/ResultsContext';
 import { useViewerMode } from '../context/ViewerModeContext';
 
-/** How often to refresh results while viewer mode is active (live updates). */
-export const AUTO_SYNC_INTERVAL_MS = 60_000;
-
 /**
- * Keeps results fresh while viewer mode is enabled: syncs once on entering viewer
- * mode and then on an interval, so a shared viewing screen picks up live in-play
- * scores and final results without anyone clicking "Sync". Renders nothing.
+ * Syncs results once whenever viewer mode is *entered* — at launch (viewer mode is
+ * the default) and whenever the user switches back from their own input to viewer
+ * mode. It does not poll: further refreshes happen via the manual "Sync" button.
+ * Renders nothing.
  */
 export function AutoResultsSync() {
   const { sync } = useResults();
@@ -17,8 +15,6 @@ export function AutoResultsSync() {
   useEffect(() => {
     if (!viewerMode) return;
     void sync();
-    const id = setInterval(() => void sync(), AUTO_SYNC_INTERVAL_MS);
-    return () => clearInterval(id);
   }, [viewerMode, sync]);
 
   return null;

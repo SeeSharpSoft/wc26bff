@@ -13,8 +13,8 @@ toggled from the user menu) to compare everyone's guesses against the real resul
 - **Results** are pulled from trusted public, key-free sources — finished scores from
   [openfootball](https://github.com/openfootball/worldcup) and **live in-play scores**
   from [TheSportsDB](https://www.thesportsdb.com) — and cached locally. Use the **Sync
-  results** button any time; in viewer mode results also refresh automatically (about
-  once a minute) so a shared screen stays live. This is the only feature that needs
+  results** button any time; entering viewer mode (the default landing, and whenever you
+  switch back to it) also triggers a one-off sync. This is the only feature that needs
   internet access.
 
 Built with **Vite + React 19 + TypeScript**. For architecture, data model, and

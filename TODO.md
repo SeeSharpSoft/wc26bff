@@ -122,7 +122,7 @@ Goal: land on viewer mode, add a live-capable score source, and auto-sync while 
       per-source failures tolerated; name matching via normalised keys
 - [x] New pure parser `thesportsdbParser.ts` tags scorelines `finished`/`live`
 - [x] `MatchCard`/`ViewerMatch` show the current score **with** a `LIVE` badge for in-play matches
-- [x] `AutoResultsSync` auto-syncs on entering viewer mode + every 60s while active (manual Sync still works in every mode)
+- [x] `AutoResultsSync` syncs once on entering viewer mode (launch + switching back); no polling. Manual Sync still works in every mode
 - [x] Tests updated for default-viewer-mode flow; shared e2e network stub fixture. 110 unit + 28 e2e green; build + lint clean.
 
 ## Progress notes
