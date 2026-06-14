@@ -26,7 +26,6 @@ export function Leaderboard() {
           <th className="lb-name">User</th>
           <th>Played</th>
           <th>Exact</th>
-          <th>Diff</th>
           <th>Tendency</th>
           <th>Points</th>
         </tr>
@@ -38,7 +37,6 @@ export function Leaderboard() {
             <td className="lb-name">{row.name}</td>
             <td>{row.played}</td>
             <td>{row.exact}</td>
-            <td>{row.diff}</td>
             <td>{row.tendency}</td>
             <td className="lb-points" data-testid={`leaderboard-points-${row.userId}`}>
               {row.points}

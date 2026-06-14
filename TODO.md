@@ -125,14 +125,6 @@ Goal: land on viewer mode, add a live-capable score source, and auto-sync while 
 - [x] `AutoResultsSync` auto-syncs on entering viewer mode + every 60s while active (manual Sync still works in every mode)
 - [x] Tests updated for default-viewer-mode flow; shared e2e network stub fixture. 110 unit + 28 e2e green; build + lint clean.
 
-## Goal — Refined scoring (goal-difference tier) ✅
-Goal: reward a correct margin between exact and tendency.
-- [x] `scoreBet` awards **2 points** for the correct (non-draw) goal difference when not exact;
-      draws never earn 2 (a non-exact draw stays at 1)
-- [x] `BetPoints` widened to `0 | 1 | 2 | 3`; `.bet-points-2` styling
-- [x] Leaderboard gains a **Diff** column + `diff` bucket; tie-break now points → exact → diff → name
-- [x] Docs (DEVELOPMENT/README/About/Points page) + unit tests updated. 113 unit + 28 e2e green; build + lint clean.
-
 ## Progress notes
 - 2026-06-12: Phase 0 complete. Project scaffolded, builds clean.
 - 2026-06-12: Phase 2 complete. localStorage wrapper with in-memory fallback +
